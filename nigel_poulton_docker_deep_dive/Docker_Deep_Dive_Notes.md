@@ -108,3 +108,45 @@ API, managing images , managing volumes, managing networks, and more...
 
 The OCI is a governance council responsible for standardizing the low-level fundamental components of container
 infrastructure.
+
+https://opencontainers.org/
+
+## Chapter summary
+
+Docker, Inc. is a technology company out of San Francisco with an ambition to change the way we do software.
+They were arguably the first-movers and instigators of the modern container revolution.
+
+The Docker technology focuses on running and managing application containers. It runs on Linux and Windows,
+can be installed almost anywhere, and is currently the most popular container runtime used by Kubernetes.
+
+The Open Container Initiative (OCI) was instrumental in standardizing the container runtime format and container image
+format.
+
+# Chapter 3: 3: Installing Docker
+
+## Docker Desktop
+
+Docker Desktop is a packaged product from Docker, Inc. It runs on 64-bit versions of Windows 10 and Mac, and it’s easy
+to download and install.
+
+Docker Desktop on Windows 10 can run native Windows containers as well as Linux containers. Docker Desktop on Mac can
+only run Linux containers.
+
+### Installing Docker Desktop on Mac
+
+Docker Desktop for Mac is like Docker Desktop on Windows 10 — a packaged product from Docker, Inc with a simple
+installer that gets you a single-engine installation of Docker that’s ideal for local development needs. You can also
+enable a single-node Kubernetes cluster.
+
+Docker Desktop on Mac doesn’t give you the Docker Engine running natively on the Mac OS Darwin kernel. Behind the
+scenes, the Docker daemon is running inside a lightweight Linux VM that seamlessly exposes the daemon and API to your
+Mac environment. This means you can open a terminal on your Mac and use the regular Docker commands.
+
+Although this works seamlessly on your Mac, don’t forget that it’s Docker on Linux under the hood.
+so it’s only going work with Linux-based Docker container.
+
+    docker version
+
+Notice that the OS/Arch: for the Server component is showing as linux/amd64. This is because the daemon is running
+inside of the Linux VM we mentioned earlier. The Client component is a native Mac application and runs directly on the
+Mac OS Darwin kernel (OS/Arch: darwin/amd64).
