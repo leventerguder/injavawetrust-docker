@@ -122,7 +122,7 @@ can be installed almost anywhere, and is currently the most popular container ru
 The Open Container Initiative (OCI) was instrumental in standardizing the container runtime format and container image
 format.
 
-# Chapter 3: 3: Installing Docker
+# Chapter 3: Installing Docker
 
 ## Docker Desktop
 
@@ -150,3 +150,82 @@ so it’s only going work with Linux-based Docker container.
 Notice that the OS/Arch: for the Server component is showing as linux/amd64. This is because the daemon is running
 inside of the Linux VM we mentioned earlier. The Client component is a native Mac application and runs directly on the
 Mac OS Darwin kernel (OS/Arch: darwin/amd64).
+
+# Chapter 4: The Big Picture
+
+## The Ops Perspective
+
+When you install Docker , you get two major components:
+
+- the Docker client
+- the Docker daemon
+
+The daemon implements the runtime, API and everything else required to run Docker.
+In a default Linux installation, the client talks to the daemon via a local IPC/Unix socket at /var/run/docker.sock.
+
+### Images
+
+It’s useful to think of a Docker image as an object that contains an OS filesystem, an application, and all application
+dependencies.
+
+In the Docker world, an image is effectively a stopped container. If you’re a developer, you can think of an image as a
+class.
+
+    docker image ls
+
+    docker image pull ubuntu:latest
+
+Run the docker image ls command again to see the image you just pulled.
+
+    docker images
+
+It’s also worth noting that each image gets its own unique ID. When referencing images, you can refer to them using
+either IDs or names. If you’re working with image ID’s, it’s usually enough to type the first few characters of the ID —
+as long as it’s unique, Docker will know which image you mean.
+
+### Containers
+
+Now that we have an image pulled locally, we can use the docker container run command to launch a container from it.
+
+    docker container run -it ubuntu:latest /bin/bash
+
+docker container run tells the Docker daemon to start a new container. The -it flags tell Docker to make the container
+interactive and to attach the current shell to the container's terminal.
+
+You can see all running containers on your system using the docker container ls command.
+
+    docker container ls
+
+### Attaching to running containers
+
+You can attach your shell to the terminal of a running container with the docker container exec command.
+
+    docker start hopeful_elion
+    docker container exec -it hopeful_elion bash
+    ps
+
+The format of **docker container exec** is **docker container exec<options><container-name or container-id> <
+/command/app>
+
+Stop the container and kill it using the docker container stop and docker container rm commands. Remember to substitute
+the names/IDs of your own containers.
+
+    docker container stop hopeful_elion
+    docker container rm hopeful_elion
+
+Verify that the container was successfully deleted by running the docker container ls command with the -a flag. Adding
+-a tells Docker to list all containers, even those in the stopped state.
+
+    docker container ls -a
+
+
+## The Dev Perspective    
+
+Use the docker image build command to create a new image using the instructions in the Dockerfile. 
+
+    docker image build -t test:latest .
+
+    docker container run -d \
+    --name web1 \
+    --publish 8080:8080 \
+    test:latest
