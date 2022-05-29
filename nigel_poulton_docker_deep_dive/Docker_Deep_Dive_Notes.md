@@ -218,10 +218,9 @@ Verify that the container was successfully deleted by running the docker contain
 
     docker container ls -a
 
+## The Dev Perspective
 
-## The Dev Perspective    
-
-Use the docker image build command to create a new image using the instructions in the Dockerfile. 
+Use the docker image build command to create a new image using the instructions in the Dockerfile.
 
     docker image build -t test:latest .
 
@@ -229,3 +228,122 @@ Use the docker image build command to create a new image using the instructions 
     --name web1 \
     --publish 8080:8080 \
     test:latest
+
+# Chapter 05 : The Docker Engine
+
+## Docker Engine - The TLDR
+
+The Docker engine is the core software that runs and manages containers.
+
+The Docker engine is modular in design and built from many small specialised tools. Where possible, these are based on
+open standards such as those maintained by the Open Container Initiative (OCI).
+
+The major components that make up the Docker engine are; the Docker daemon, containerd, runc, and various plugins such
+as networking and storage.
+
+## Docker Engine - The Deep Dive
+
+When Docker was first released, the Docker engine had two major components:
+
+- The Docker daemon
+- LXC
+
+The Docker daemon was a monolithic binary. It contained all of the code for the Docker client, the Docker API, the
+container runtime, image builds, and much more.
+
+LXC provided the daemon with access to the fundamental building-blocks of containers that existed in the Linux kernel.
+Things like namespaces and control groups. (cgroups)
+
+### Getting rid of LXC
+
+LXC is Linux-specific. This was a problem for a project that had aspirations of being multi-platform.
+
+As a result, Docker. Inc. developed their own tool called **libcontainer** as a replacement for LXC. The goal of
+**libcontainer** was to be a platform-agnostic tool that provided Docker with access to the fundamental container
+building-blocks that exist in the host kernel.
+
+### Getting rid of the monolithic Docker daemon
+
+The monolithic nature of the Docker daemon became more and more ploblematic:
+
+- It's hard to innovate on
+- It got slower.
+- It wasn't what the ecosystem wanted.
+
+This work of breaking apart and re-factoring the Docker engine has seen all of the container execution and container
+runtime code entirely removed from the daemon and refactored into small, specialized tools.
+
+### The influence of the Open Container Initiative (OCI)
+
+While Docker, Inc was breaking the daemon apart and refactoring code, the OCI was in the process of defining two
+container-related specifications;
+
+- Image spec
+- Container runtime spec
+
+The Docker engine implements the OCI specifications as closely as possible.
+
+### runc
+
+The **runc** is the reference implementation of the OCI container-runtime spec.
+runc has a single purpose in life - create containers.
+
+### containerd
+
+All of the container execution logic was ripped out and refactored into a new tool called **containerd**.
+Its sole purpose in life was to manage container lifecycle operations -start | stop | pause | rm ...
+
+In the Docker engine stack , containerd sits between the daemon and runc at the OCI layer.
+
+**containerd** was originally intended to be small, lightweight, and designed for a single task in life - container
+lifecycle operations.However, over time it has branched out and taken on more functionality. Things like image pulls,
+volumes and networks.
+
+### Starting a new container
+
+The following docker container run command will start a simple new container based on the alpine:latest image.
+
+    docker container run --name ctr1 -it alpine:latest sh
+
+When you type commands like this into the Docker CLI , the Docker clients converts them into the appropriate API payload
+and POSTs them to the API endpoint exposed by the Docker daemon.
+
+One the daemon receives the command to create a new container, it makes a call to containerd.
+The daemon communicates with container via a CRUD-style API over gRPC.
+
+Despite its name, **containerd** cannot actually create containers. It uses **runc** to do that. It converts the
+required Docker image into an OCI bundle and tells runc to use this to create a new container.
+
+runc interfaces with the OS kernel to pull together all of the constructs necessary to create a container.
+
+### One huge benefit of this model
+
+Having all of the logic and code to start and manage containers removed from the daemon means that the entire container
+runtime is decoupled from the Docker daemon.
+
+In the old model, where all of container runtime logic was implemented in the daemon, starting and stopping the daemon
+would kill all running containers on the host. This was a huge problem in production environments
+
+Fortunately, this is no longer a problem.
+
+### What's this shim all about ?
+
+The shim is integral to the implementation of daemonless containers.
+
+**containerd** uses **runc** to create new containers. In fact, it forks a new instance of runc for every container it
+creates. However, once each container is created, the parent runc process exits. This means we can run hundreds of
+containers without having to run hundreds of runc instances.
+
+### How it’s implemented on Linux
+
+The components we've discussed are implemented as separate binaries as follows:
+
+- dockerd (The Docker daemon)
+- docker-containerd(containerd)
+- docker-container-shim(shim)
+- docker-runc(runc)
+
+### What's the point of the daemon
+
+At the time of writing, some of the major functionality that still exists in the daemon includes; image
+management, image builds, the REST API, authentication, security, core networking, and orchestration.
