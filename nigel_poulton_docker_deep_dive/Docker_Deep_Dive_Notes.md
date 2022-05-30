@@ -347,3 +347,36 @@ The components we've discussed are implemented as separate binaries as follows:
 
 At the time of writing, some of the major functionality that still exists in the daemon includes; image
 management, image builds, the REST API, authentication, security, core networking, and orchestration.
+
+## Securing client and daemon communication
+
+Docker implements a client-server model.
+
+- The client component implements the CLI
+- The server(daemon) component implements the functionality, including the public-facing REST API.
+
+By default, network communication occur over an unsecured HTTP socket on port 2375/tcp
+
+Docker lets you force the client and daemon to only accept network connections that are secured with TLS. This is
+recommended for production environments, even if all traffic is traversing trusted internal networks.
+
+## Chapter summary
+
+The Docker engine is modular in design and based heavily on open-standards from the OCI.
+The Docker daemon implements the Docker API which is currently a rich, versioned, HTTP API that has developed alongside
+the rest of the Docker project.
+
+Container execution is handled by **containerd.** You can think of it as a container supervisor that handles container
+lifecycle operations. It is small and lightweight and can be used by other projects and third-party tools.
+
+containerd needs to talk to an OCI-compliant container runtime to actually create containers. By default, Docker uses
+runc as its default container runtime. runc is the de facto implementation of the OCI runtime-spec and expects to start
+containers from OCI-compliant bundles.
+containerd talks to runc and ensures Docker images are presented to runc as OCI-compliant bundles.
+
+runc can be used as a standalone CLI tool to create containers. It’s based on code from libcontainer, and can also be
+used by other projects and third-party tools.
+
+There is still a lot of functionality implemented in the Docker daemon. More of this may be broken out over time.
+Functionality currently still inside of the Docker daemon includes, but is not limited to; the Docker API, image
+management, authentication, security features and core networking.
