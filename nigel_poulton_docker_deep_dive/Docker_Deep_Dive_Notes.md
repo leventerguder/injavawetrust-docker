@@ -229,7 +229,7 @@ Use the docker image build command to create a new image using the instructions 
     --publish 8080:8080 \
     test:latest
 
-# Chapter 05 : The Docker Engine
+# Chapter 5 : The Docker Engine
 
 ## Docker Engine - The TLDR
 
@@ -380,3 +380,101 @@ used by other projects and third-party tools.
 There is still a lot of functionality implemented in the Docker daemon. More of this may be broken out over time.
 Functionality currently still inside of the Docker daemon includes, but is not limited to; the Docker API, image
 management, authentication, security features and core networking.
+
+# Chapter 6 Images
+
+## Docker images - The TLDR
+
+A Docker image is a unit of packaging that contains everything required for an application to run. This includes;
+application code , application dependencies, and OS constructs.
+
+If you are a former VM admin, you can think of Docker images as similar to VM templates.
+A VM template is like a stopped VM.
+A Docker image is like a stopped container. If you are a developer you can think of them as similar to class.
+
+You can get Docker images by pulling them from an image registry.
+
+Images are made up multiple layers that are stacked on top of each other and represented as a single object.
+
+## Docker images - The deep dive
+
+### Images and containers
+
+We use the **docker container run** and **docker service create** commands to start one or more containers from a single
+image. Attempting to delete an image without stopping and destroying all containers using it will result in an error.
+
+### Images are usually small
+
+The whole purpose of a container is to run a single application or service. This means it only need to code and
+dependencies of the app/service it is running - it does not need anything else.
+
+### Pulling images
+
+    docker image pull redis:latest
+    ...
+    docker image pull alpine:latest
+    ...
+    docker image ls
+
+### Image registries
+
+We store images in centralised places called image registries. This makes it easy to share and access them.
+The most common registry is Docker Hub (https://hub.docker.com)
+
+    docker info
+    .....
+    .....
+    Registry: https://index.docker.io/v1/
+    ....
+
+### Official and unofficial repositories
+
+Docker Hub has the concept of official repositories and unofficial repositories.
+
+Official repositories are the home to images that have been vetted and curated by Docker.
+Unofficial repositories can be like the wild-west — you should not assume they are safe, well-documented or built
+according to best practices.
+
+### Image naming and tagging
+
+The format for **docker image pull** when working with an image from an official repository is :
+
+    docker image pull <repository>:<tag>
+
+    docker image pull alpine:latest
+    docker image pull redis:latest
+
+If you do not specify an image tag after the repository name, Docker will assume you are referring to the image tagged
+as **latest**. If the repository doesn't have an image tagged as **latest** the command will fail.
+
+Second, the latest tag doesn’t have any magical powers. Just because an image is tagged as latest does not guarantee it
+is the most recent image in a repository.
+
+Pulling images from an unofficial repository is essentially the same — you just need to prepend the repository name with
+a Docker Hub username or organization name.
+
+If you want to pull images from 3rd party registries (not Docker Hub), you need to prepend the repository name with the
+DNS name of the registry.
+
+    docker image pull gcr.io/google-containers/git-sync:v3.1.5
+
+### Images with multiple tags
+
+A single image can have as many tags as you want.
+
+Pull all of the images in a repository by adding the -a flag to the docker image pull command. Then run docker image ls
+to look at the images pulled.
+
+    docker image pull -a nigelpoulton/tu-demo
+    docker image ls
+
+    nigelpoulton/tu-demo                latest    c610c6a38555   11 months ago   58.1MB
+    nigelpoulton/tu-demo                v2        c610c6a38555   11 months ago   58.1MB
+    nigelpoulton/tu-demo                v1        6ba12825d092   11 months ago   58.1MB
+    nigelpoulton/tu-demo                v2-old    d5e1e48cf932   2 years ago     104MB
+    nigelpoulton/tu-demo                v1-old    6852022de69d   2 years ago     104MB
+
+You will see that two of the IDs match. This is because two of the tags refer to the same image. Put another way, one of
+the images has two tags.
+
+Moral of the story, latest is an arbitrary tag and is not guaranteed to point to the newest image in a repository!
