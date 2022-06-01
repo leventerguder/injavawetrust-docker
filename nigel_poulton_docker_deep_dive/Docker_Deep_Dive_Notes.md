@@ -145,8 +145,7 @@ Mac environment. This means you can open a terminal on your Mac and use the regu
 Although this works seamlessly on your Mac, don’t forget that it’s Docker on Linux under the hood.
 so it’s only going work with Linux-based Docker container.
 
-    docker version
-
+docker version
 Notice that the OS/Arch: for the Server component is showing as linux/amd64. This is because the daemon is running
 inside of the Linux VM we mentioned earlier. The Client component is a native Mac application and runs directly on the
 Mac OS Darwin kernel (OS/Arch: darwin/amd64).
@@ -171,14 +170,12 @@ dependencies.
 In the Docker world, an image is effectively a stopped container. If you’re a developer, you can think of an image as a
 class.
 
-    docker image ls
+docker image ls
 
-    docker image pull ubuntu:latest
-
+docker image pull ubuntu:latest
 Run the docker image ls command again to see the image you just pulled.
 
-    docker images
-
+docker images
 It’s also worth noting that each image gets its own unique ID. When referencing images, you can refer to them using
 either IDs or names. If you’re working with image ID’s, it’s usually enough to type the first few characters of the ID —
 as long as it’s unique, Docker will know which image you mean.
@@ -187,47 +184,44 @@ as long as it’s unique, Docker will know which image you mean.
 
 Now that we have an image pulled locally, we can use the docker container run command to launch a container from it.
 
-    docker container run -it ubuntu:latest /bin/bash
-
+docker container run -it ubuntu:latest /bin/bash
 docker container run tells the Docker daemon to start a new container. The -it flags tell Docker to make the container
 interactive and to attach the current shell to the container's terminal.
 
 You can see all running containers on your system using the docker container ls command.
 
-    docker container ls
+docker container ls
 
 ### Attaching to running containers
 
 You can attach your shell to the terminal of a running container with the docker container exec command.
 
-    docker start hopeful_elion
-    docker container exec -it hopeful_elion bash
-    ps
-
+docker start hopeful_elion
+docker container exec -it hopeful_elion bash
+ps
 The format of **docker container exec** is **docker container exec<options><container-name or container-id> <
 /command/app>
 
 Stop the container and kill it using the docker container stop and docker container rm commands. Remember to substitute
 the names/IDs of your own containers.
 
-    docker container stop hopeful_elion
-    docker container rm hopeful_elion
-
+docker container stop hopeful_elion
+docker container rm hopeful_elion
 Verify that the container was successfully deleted by running the docker container ls command with the -a flag. Adding
 -a tells Docker to list all containers, even those in the stopped state.
 
-    docker container ls -a
+docker container ls -a
 
 ## The Dev Perspective
 
 Use the docker image build command to create a new image using the instructions in the Dockerfile.
 
-    docker image build -t test:latest .
+docker image build -t test:latest .
 
-    docker container run -d \
-    --name web1 \
-    --publish 8080:8080 \
-    test:latest
+docker container run -d
+--name web1
+--publish 8080:8080
+test:latest
 
 # Chapter 5 : The Docker Engine
 
@@ -303,8 +297,7 @@ volumes and networks.
 
 The following docker container run command will start a simple new container based on the alpine:latest image.
 
-    docker container run --name ctr1 -it alpine:latest sh
-
+docker container run --name ctr1 -it alpine:latest sh
 When you type commands like this into the Docker CLI , the Docker clients converts them into the appropriate API payload
 and POSTs them to the API endpoint exposed by the Docker daemon.
 
@@ -410,22 +403,22 @@ dependencies of the app/service it is running - it does not need anything else.
 
 ### Pulling images
 
-    docker image pull redis:latest
-    ...
-    docker image pull alpine:latest
-    ...
-    docker image ls
+docker image pull redis:latest
+...
+docker image pull alpine:latest
+...
+docker image ls
 
 ### Image registries
 
 We store images in centralised places called image registries. This makes it easy to share and access them.
 The most common registry is Docker Hub (https://hub.docker.com)
 
-    docker info
-    .....
-    .....
-    Registry: https://index.docker.io/v1/
-    ....
+docker info
+.....
+.....
+Registry: https://index.docker.io/v1/
+....
 
 ### Official and unofficial repositories
 
@@ -439,11 +432,10 @@ according to best practices.
 
 The format for **docker image pull** when working with an image from an official repository is :
 
-    docker image pull <repository>:<tag>
+docker image pull <repository>:<tag>
 
-    docker image pull alpine:latest
-    docker image pull redis:latest
-
+docker image pull alpine:latest
+docker image pull redis:latest
 If you do not specify an image tag after the repository name, Docker will assume you are referring to the image tagged
 as **latest**. If the repository doesn't have an image tagged as **latest** the command will fail.
 
@@ -456,7 +448,7 @@ a Docker Hub username or organization name.
 If you want to pull images from 3rd party registries (not Docker Hub), you need to prepend the repository name with the
 DNS name of the registry.
 
-    docker image pull gcr.io/google-containers/git-sync:v3.1.5
+docker image pull gcr.io/google-containers/git-sync:v3.1.5
 
 ### Images with multiple tags
 
@@ -465,16 +457,77 @@ A single image can have as many tags as you want.
 Pull all of the images in a repository by adding the -a flag to the docker image pull command. Then run docker image ls
 to look at the images pulled.
 
-    docker image pull -a nigelpoulton/tu-demo
-    docker image ls
+docker image pull -a nigelpoulton/tu-demo
+docker image ls
 
-    nigelpoulton/tu-demo                latest    c610c6a38555   11 months ago   58.1MB
-    nigelpoulton/tu-demo                v2        c610c6a38555   11 months ago   58.1MB
-    nigelpoulton/tu-demo                v1        6ba12825d092   11 months ago   58.1MB
-    nigelpoulton/tu-demo                v2-old    d5e1e48cf932   2 years ago     104MB
-    nigelpoulton/tu-demo                v1-old    6852022de69d   2 years ago     104MB
-
+nigelpoulton/tu-demo latest c610c6a38555 11 months ago 58.1MB
+nigelpoulton/tu-demo v2 c610c6a38555 11 months ago 58.1MB
+nigelpoulton/tu-demo v1 6ba12825d092 11 months ago 58.1MB
+nigelpoulton/tu-demo v2-old d5e1e48cf932 2 years ago 104MB
+nigelpoulton/tu-demo v1-old 6852022de69d 2 years ago 104MB
 You will see that two of the IDs match. This is because two of the tags refer to the same image. Put another way, one of
 the images has two tags.
 
 Moral of the story, latest is an arbitrary tag and is not guaranteed to point to the newest image in a repository!
+
+### Filtering the output of docker image ls
+
+Docker provides the -- filter flag to filter the list of images returned by docker image ls.
+
+docker image ls --filter dangling=true
+A dangling image is an image that is no longer tagged, and appears in listings as < none >:< none >. A common way they
+occur
+is when building a new image giving it a tag that already exists. When this happens, Docker will build the new image,
+notice that an existing image already has the same tag, remove the tag from the existing image and give it to the new
+image.
+
+You can delete all dangling images on a system with the docker image prune command. If you add the -a flag Docker
+will also remove all unused images. (those not in use by any containers.)
+
+- dangling : Accepts true or false , and returns only dangling images (true) , or non-dandling images (false).
+- before : Requires an image name or ID as argument , and returns all images created before it.
+- since : Same as above, but returns images created after the specified image.
+- label : Filters images based on the presence of a label or label and value. The docker image ls command does not
+  display labels in its output.
+
+Here is an example ;
+
+docker image ls --filter=reference="*:latest"
+You can also use the --format flag to format output ;
+
+docker image ls --format "{{.Size}}"
+docker image ls --format "{{.Repository}}: {{.Tag}}: {{.Size}}"
+
+### Searching Docker Hub from the CLI
+
+The docker search command lets you search Docker Hub from the CLI. This has limited value as you can only pattern-match
+against strings in the “NAME” field.
+
+docker search leventerguder
+...
+docker search nigelpoulton
+....
+docker search alpine
+You can use --filter "is-official=true" so that only official repos are displayed.
+
+docker search alpine --filter "is-official=true"
+By default, Docker will only display 25 lines of results. However, you can use the --limit flag to increase that to a
+maximum of 100.
+
+## Images and Layers
+
+A Docker image is just a bunch of loosely-connected read only layers, with each layer comprising one or more files.
+
+![](image-layers.png)
+
+Docker takes care of stacking these layers and representing them as a single unified object.
+All Docker images start with a base layer , and as changes are made and new content is added, new layers are added on
+top.
+
+It is important to understand that as additional layers are added, the image is always the combination of all layers
+stacked in the order they were added.
+
+## Sharing image layers
+
+Multiple images can , and do, share layers. This leads to efficiencies in space and performance.
+Docker is smart enough to recognize when it’s being asked to pull an image layer that it already has a local copy of. 
