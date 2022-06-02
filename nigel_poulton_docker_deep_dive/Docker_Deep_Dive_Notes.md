@@ -514,7 +514,7 @@ docker search alpine --filter "is-official=true"
 By default, Docker will only display 25 lines of results. However, you can use the --limit flag to increase that to a
 maximum of 100.
 
-## Images and Layers
+### Images and Layers
 
 A Docker image is just a bunch of loosely-connected read only layers, with each layer comprising one or more files.
 
@@ -527,7 +527,92 @@ top.
 It is important to understand that as additional layers are added, the image is always the combination of all layers
 stacked in the order they were added.
 
-## Sharing image layers
+### Sharing image layers
 
 Multiple images can , and do, share layers. This leads to efficiencies in space and performance.
-Docker is smart enough to recognize when it’s being asked to pull an image layer that it already has a local copy of. 
+Docker is smart enough to recognize when it’s being asked to pull an image layer that it already has a local copy of.
+
+### Pulling images by digest
+
+Tags are mutable. This means it's possible to accidentally tag an image with the wrong tag. Sometimes, it’s even
+possible to tag an image with the same tag as an existing, but different, image. This can cause problems!
+
+Docker 1.10 introduced a content addressable storage model. As part of this model, all images get a cryptographic
+content hash. You cannot change the content of an image and keep the old digest.
+
+This means digests are immutable and provide a solution to the problem we just talked about.
+
+Every time you pull an image, the docker image pull command includes the image’s digest as part of the information
+returned.
+
+    docker image ls --digests alpine
+    docker image rm alpine:latest
+    docker image pull alpine@sha256:686d8c9dfa6f3ccfc8230bc3178d23f84eeaf7e457f36f271ab1acc53015037c
+
+### A little bit more about image hashes (digests)
+
+Each images is identified by a crypto ID that is a hash of the config file. Each layer is identified by a crypto ID that
+is a has of the layer content. We call these "content hashes".
+
+This means that changing the content of the image, or any of its layers, will cause the associated crypto hashes to
+change. As a result, images and layers are immutable, and we can easily identify any changes made to either.
+
+Each layer also gets something called a distribution hash.
+
+As well as providing a cryptographically verifiable way to verify image and layer integrity, it also avoids ID
+collisions that could occur if image and layer IDs were randomly generated.
+
+### Multi-architecture images
+
+We’re using the term “architecture” to refer to CPU architecture such as x64 and ARM. We use the term “platform” to
+refer to either the OS (Linux or Windows) or the combination of OS and architecture.
+
+Docker and Docker Hub have a slick way of supporting multi-arch images.
+Docker will pull the correct image for your platform and architecture.
+
+To make this happen, the Registry API supports two important constructs:
+
+- manifest lists
+- manifests
+
+The manifest list is exactly what is sounds like: a list of architectures supported by a particular image tag. Each
+supported architecture then haas its own *manifest detailing the layers that make it up.
+
+![](manifest-lists.png)
+
+We do not have to tell Docker that we need the Linux or Windows version of image. We just run normal commands and let
+Docker take care of getting the right image for the platform and architecture we are running.
+
+    docker container run --rm golang go version
+    ....
+    go version go1.18.3 linux/arm64
+
+All official images have manifest lists.
+You can create your own builds for different platforms and architectures with docker buildx and then use docker manifest
+create to create your own manifest lists.
+
+    docker manifest inspect redis
+
+### Deleting Images
+
+Deleting an image will remove the image and all of its layers from your Docker host.
+
+    docker image rm <image-name> | <image-id>
+
+If the image you are trying to delete is in use by a running container you will not be able to delete it. Stop and
+delete any containers before trying the delete operation again.
+
+A handy shortcut for deleting all images on a Docker host is to run the docker image rm command and pass it a list of
+all image IDs on the system by calling docker image ls with the -q flag.
+
+    docker image rm $(docker image ls -q) -f
+
+## Images - The commands
+
+- docker image pull is the command to download images. We pull images from repositories inside of remote registries.
+- docker image ls lists all of the images stored in your Docker host's local image cache.
+- docker image inspect gives you all of the glorious details of an image.
+- docker manifest inspect , allows you to inspect the manifest list of any image stored on Docker Hub
+- docker buildx is a Docker CLI plugin that extends the Docker CLI to support multi-arch builds.
+- docker image rm is the command to delete images.
+ 
