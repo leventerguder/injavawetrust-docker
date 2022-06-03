@@ -615,4 +615,103 @@ all image IDs on the system by calling docker image ls with the -q flag.
 - docker manifest inspect , allows you to inspect the manifest list of any image stored on Docker Hub
 - docker buildx is a Docker CLI plugin that extends the Docker CLI to support multi-arch builds.
 - docker image rm is the command to delete images.
- 
+
+# Chapter 7 : Containers
+
+## Docker Containers - The TLDR
+
+A container is the runtime instance of an image. In the same way that you can start a virtual machine (VM) from a
+virtual machine template, you start one or more containers from a single image. The big difference between a VM and a
+container is that containers are faster and more lightweight.
+
+    docker container run -it ubuntu /bin/bash
+
+The -it flags will connect your current terminal window to the container's shell.
+
+The container will start, seize your terminal for 10 seconds, then exit. The following is a simple way to demonstrate
+this on a Linux Docker host.
+
+    docker container run -it alpine:latest sleep 10
+
+You can manually stop a running container with the **docker container** stop command. You can then restart it with
+**docker container start**
+To get rid of container forever , **docker container rm**.
+
+## Docker Containers - The deep dive
+
+### Containers vs VMs
+
+Containers and VMs both need a host to run.
+Let’s assume a requirement where your business has a single physical server that needs to run 4 business applications.
+
+Assuming the scenario of a single physical server that needs to run 4 business applications, we’d create 4 VMs, install
+4 operating systems, and then install the 4 applications.
+
+![](vm-scenario.png)
+
+On top of the OS, we install a container engine such as Docker. The container engine then takes OS resources such as the
+process tree, the filesystem, and the network stack, and carves them into isolated constructs called containers. Each
+container looks smells and feels just like a real OS. Inside of each container we run an application.
+
+If we assume the same scenario of a single physical server needing to run 4 business applications, we’d carve the OS
+into 4 containers and run a single application inside each.
+
+![](container-scenario.png)
+
+At a high level, hypervisors perform hardware virtualization , they carve up physical hardware resources into virtual
+versions called VMs. On the other hand, containers perform OS virtualization , they carve OS resources into virtual
+versions called containers.
+
+### The VM tax
+
+The VM model carves low-level hardware resources into VMs. Each VM is a software construct containing virtual CPUs,
+virtual RAM, virtual disks etc.As such, every VM needs its own OS to claim, initialize, and manage all of those virtual
+resources. And sadly, every OS comes with its own set of baggage and overheads.
+
+The container model has a single OS/kernel running on the host. It's possible to run tens or hundreds of containers on a
+single host with every container sharing that single OS/kernel.
+That means a single OS consuming CPU, RAM and storage. A single OS that needs licensing. A single OS that needs updating
+and patching. And a single OS kernel presenting an attack surface. All in all, a single OS tax bill!
+
+That might not seem a lot in our example of a single server running 4 business applications. But when you start talking
+about hundreds or thousands of apps, it becomes a game-changer.
+
+Another thing to consider is application start times. As a container isn’t a full-blown OS, it starts much faster than a
+VM.
+
+You can pack more applications onto less resources, start them faster, and pay less in licensing and admin costs, as
+well as present less of an attack surface to the dark side.
+
+Well, one thing that’s not so great about the container model is security. Out of the box, containers are less secure
+and provide less workload isolation than VMs.
+
+### Starting a simple container
+
+The simplest way to start a container is with the **docker container run** command.
+
+    docker container run -it ubuntu:latest /bin/bash
+
+The **docker container run** tels Docker to run a new container. The -if flags make the container interactive and attach
+it to your terminal.
+
+Once the image was pulled , the daemon instructed containerd and runc to create and start the container.
+
+### Container processes
+
+When we started the Ubuntu container , this makes the Bash shell the one and only process running inside of the
+container.
+Killing the main process in the container will kill the container.
+
+Press Ctrl-PQ to exit the container without terminating its main process.
+
+    docker container ls
+
+It's important to understand that this container is still running and you can re-attach your terminal to it with the
+docker container exec command.
+
+    docker container exec -it <container-id> bash
+
+If you are following along with the examples, you should stop and delete the container with the following two commands.
+
+    docker container stop <container-id>
+    docker container rm <container-id>
