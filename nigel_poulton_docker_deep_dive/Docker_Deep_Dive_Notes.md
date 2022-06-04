@@ -715,3 +715,140 @@ If you are following along with the examples, you should stop and delete the con
 
     docker container stop <container-id>
     docker container rm <container-id>
+
+### Container lifecycle
+
+    docker conatainer run --name percy -it ubuntu:latest /bin/bash
+    ...
+    cd tmp
+    echo "Sunderland is the greatest football team in the world" > newfile
+    ...
+    docker container stop percy
+
+You can use the container's name or ID with the docker container stop command.
+
+    docker container stop <container-id or container-name>
+    docker container start percy
+    docker container exec -it percy bash
+
+Stopping a container does not destroy the container or the data inside of it.
+
+- The data created in this example is stored on the Docker hosts local filesystem. If the Docker host fails, the data
+  will be lost.
+- Containers are designed to be immutable objects and it's not a good practice to write data to them.
+
+For these reasons, Docker provides volumes that exist separately from the container, but can be mounted into the
+container at runtime.
+
+    docker container stop percy
+    docker container rm percy
+    docker container ls -a
+
+To summarize the lifecycyle of a container ; you can stop , start, pause and restart a container as many times as you
+want. It's not until you explicitly delete a container that you run a chance of losing its data.
+Even then, if you are storing data outside the container in a volume, that data's going to persist even after the
+container has gone.
+
+### Stopping container gracefully
+
+When you kill a running container with **docker container rm <container> -f** is killed without warning.
+**docker container stop** command is far more polite.
+
+The docker container stop sends a SIGTERM signal to the main application process inside the container (PID).
+The docker container rm <container> -f goes straight to the SIGKILL.
+
+### Self-healing containers with restart policies
+
+Restart policies are applied per-container, and can be configured imperatively on the command line as part of docker
+container run commands, or declaratively in YAML files for use with higher-level tools such as Docker Swarm, Docker
+Compose and Kubernetes.
+
+Restart policies ;
+
+- always
+- unless-stopped
+- on-failed
+
+The "always" policy is the simplest. It always restarts a stopped container unless it has been explicitly stopped, such
+as via a docker container stop command.
+
+      docker container run --name neversaydie -it --restart always alpine sh
+      ...
+      exit
+
+An interesting feature of the --restart always policy is that if you stop a container with docker container stop and the
+restart the Docker daemon, the container will be restarted.
+
+If you restart the Docker daemon , the container will be automatically restarted when the daemon comes back up.
+The main difference between the always and unless-stopped policies is that containers with the --restart unless-stopped
+policy will not be restarted when the daemon restarts if they were in the Stopped (Exited) state.
+
+      docker container run -d --name always-policy --restart always alpine sleep 1d
+      docker container run -d --name unless-stopped-policy --restart unless-stopped alpine sleep 1d
+      ...
+      docker container ls
+
+Once Docker has restarted , you can check the status of the containers.
+
+      docker container ls -a
+
+Notice that the "always-policy" container has been restarted, bt the "unless-stopped" container has not.
+The on-failure policy will restart a container if it exits with a non-zero exit code. It will also restart containers
+when the Docker daemon restarts, even containers that were in the stopped state.
+
+## Web Server Example
+
+Now let’s take a look at a Linux-based web server example.
+
+    docker container run -d --name webserver -p 80:8080 nigelpoulton/pluralsight-docker-ci
+
+This time we give it the -d flag instead of -it. -d stands for daemon mode , and tells the container to run in the
+background.
+You can't use -d and -it flags in the same command.
+
+The -p flag maps port 80 on the Docker host to port 8080 inside the container. This means that that traffic hitting the
+Docker host on port 80 will be directed to pot 800 inside of the container.
+
+## Inspecting containers
+
+When building a Docker image , you can embed an instruction that lists the default app for any containers that use the
+image.
+YOu can see this for any image by running a **docker image inspect**.
+
+    docker image inspect nigelpoulton/pluralsight-docker-ci 
+
+## Tidying up
+
+This should never be performed on production systems or systems running important containers.
+
+Run the following command from the shell of your Docker host to delete all containers.
+
+    docker container rm $(docker container ls -aq) -f 
+    docker image rm $(docker image ls -q) -f
+
+## Containers - The commands
+
+**docker container run** is the command used to start new containers.
+
+    docker container run -it ubuntu /bin/bash
+
+Ctrl+PQ will detach your shell from the terminal of a container and leave the container running(UP) in the background.
+
+**docker container ls** lists all containers in the running (UP) state. If you add the -a flag you will also see
+containers in the sopped (Exited) state.
+
+**docker container exec runs** a new process inside of a running container.It's ueful for attaching the shell of your
+Docker hosts to a terminal insiede of a running container.
+
+    docker container exec -it <container-name or container-id> bash
+
+**docker container stop** will stop a running container and put it in the Exited (O) state. It does this by issuing a
+SIGTERM to the process with PID 1 inside of the container.
+
+**docker container start** will restart a stopped (Exited) container. You can give docker container start the name or ID
+of a container.
+
+**docker container rm** will delete a stopped container. You can specify containers by name or ID. It is recommended
+that you stop a container with the docker container stop command before deleting it with docker container rm.
+
+**docker container inspect** will show you detailed configuration and runtime information about a container.
