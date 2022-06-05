@@ -852,3 +852,116 @@ of a container.
 that you stop a container with the docker container stop command before deleting it with docker container rm.
 
 **docker container inspect** will show you detailed configuration and runtime information about a container.
+
+# Chapter 08 - Containerizing an app
+
+The process of taking an application and configuring it to run as a container is called “containerizing".
+
+## Containerizing an app - The TLDR
+
+Containers all about making apps simple to build, ship, and run.
+The process of containerizing an app looks like this:
+
+- Start with your application code and dependencies
+- Create a Dockerfile that describes your app, its dependencies, and how to run it.
+- Feed the Dockerfile into the docker image build command.
+- Push the new image to a registry(optional)
+- Run container from the image.
+
+![](containerizing-app.png)
+
+## Containerizing an app - The deep dive
+
+### Containerize a single-container app
+
+**Getting the application code**
+
+    git clone https://github.com/nigelpoulton/psweb.git
+    ...    
+    cd psweb
+    ls -l
+
+**Inspecting the Dockerfile**
+
+A Docker file is the starting point for creating a container image - it describes an application and tells Docker how to
+build it into an image.
+
+The directory containing the application and dependencies is referred to as the build context. It's a common practice to
+keep your Dockerfile in the root directory of the build context.It's also important that Dockerfile starts with a
+capital "D" and is all one word.
+
+    cat Dockerfile
+
+    FROM alpine
+    LABEL maintainer="nigelpoulton@hotmail.com"
+    RUN apk app --update nodejs npm curl
+    COPY . /src
+    WORKDIR /src
+    RUN npm install
+    EXPOSE 8080
+    ENTRYPOINT ["node","./app.js"]
+
+All Dockerfiles start with the FROM instruction.This will be the base layer of the image, and the rest of the app will
+be added on top as additional layers.
+This particular application is a Linux app, so it’s important that the FROM instruction refers to a Linux-based image.
+If you’re containerizing a Windows application, you’ll need to specify the appropriate Windows base image - such as
+mcr.microsoft.com/dotnet/core/aspnet.
+
+The RUN instruction uses the Alpine apk package manager to install nodejs and npm into the image. It creates layer
+directly above the Alpine base layer, and installs the packages in this layer.
+
+The COPY . /src instruction creates another new layer and copies in the application and dependency files from the build
+context.
+
+Next, the Dockerfile uses the WORKDIR instruction to set the working directory inside the image filesystem for the rest
+of the instruction in the file. The instruction does not create a new image layer.
+
+Then the RUN npm install instruction creates a new layer and uses npm to install application dependencies listed in the
+package.json file in the build context.
+
+The application exposes a web service on TCP port 8080, so the Dockerfile documents this with the EXPOSE 8080
+instruction.
+This is added as image metadata and not an image layer.
+
+Finally, the ENTRYPOINT instruction is used to set the main application that the image (container) should run. This is
+also added as metadata and not an image layer.
+
+![](dockerfile-layers.png)
+
+**Containerize the app/build the image**
+
+The following command will build a new image called web:latest. The period (.) at the end of command tells Docker to use
+the shell's current working directory as the build context.
+
+    pwd
+    .../psweb
+    ...
+    docker image build -t weeb:latest .
+    ...
+    docker image ls
+
+**Pushing images**
+
+In order to push an image to Docker Hub,you need to login with your Docker ID. You also need to tag the image
+appropriately.
+
+    docker login
+    ..
+
+Docker is opinionated, so by default it pushes images to Docker Hub. You can push to other registries, but you have to
+explicitly set the registry URL as part of the docker image push command.
+
+The previous docker image ls output shows the image is tagged as web:latest. This translates to a repository called web
+and an image tagged as latest. As a result, docker image push will try and push the image to a repository called web on
+Docker Hub.However, I don’t have access to the web repository, all of my images live in the nigelpoulton second-level
+namespace.
+
+    docker image tag web:latest <your-account>/web:latest
+
+The format of the command is docker image tag <current-tag> <new-tag> and it adds an additional tag, it does not
+overwrite the original.
+
+You can't push images to repos in my Docker namespace, you will have to tag the image to use your own.
+
+    docker image push <you-account>/web:latest
+    ...
