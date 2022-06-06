@@ -1035,4 +1035,69 @@ stage. Internally, they are numbered from top starting at 0.
     Stage 1 is called appserver
     Stage 2 is called production
 
+An important thing to note, is that COPY --from instructions are used to only copy production-related application code
+from the images built by the previous stages. They do not copy build artefacts that are not needed for production.
+
+    docker image build -t multi:stage .
+
+## A few best practices
+
+### Leverage the build cache
+
+The best way to see the impact of the cache is to build a new image on a clean Docker host, then repeat the same build
+immediately after. The first build will pull images and take time building layers. The second build will complete almost
+instantaneously. This is because artefacts from the first build, such as layers are cached and leveraged by later
+builds.
+
+The docker image build process iterates through a Dockerfile one-line-at-a time starting from the top. For each
+instruction, Docker looks to see if it already has an image layer for that instruction in its cache.
+If it does, this is a cache hit, and it uses that layer. If it doesn't, this is a cache miss, and it builds a new layer
+from the instruction.
+
+### Squash the image
+
+Squashing an image isn't really a best practice as it has pros and cons.
+
+Squashing can be good in situations where images are starting to have a lot of layers and this isn’t ideal. An example
+might be when creating a new base image that you want to build other images from in the future — this base is much
+better as a single-layer image.
+
+On the negative side, squashed images do not share image layers. This can result in storage inefficiencies and larger
+push and pull operations.
+
+Add the --squash flag to the docker image build command if you want to create a squashed image.
+
+The squashed image will also need to send every byte to Docker Hub on a docker image push command, whereas the
+non-squashed image only needs to send unique layers.
+
+![](squashed vs non-squashed images.png)
+
+### Use no-install-recommends
+
+If you are building Linux images and using the apt package manager, you should use the no-install-recommends flag with
+the apt-get install command. This makes sure that apt only installs main dependencies and not recommended or suggested
+packages. This can greatly reduce the number of unwanted packages that are downloaded into your images.
+
+## Containerizing an app - The commands
+
+**docker image build** is the command that reads a Dockerfile and containerizes an application. The -t flag tags the
+image, and the -f flag lets you specify the name and location of the Dockerfile. With the -f flag, it is possible to use
+a Docker file with an arbitrary name and in an arbitrary location.
+
+The **FROM** instruction in a Dockerfile specifies the base image for the new image you will build. It is usually the
+first instruction in a Dockerfile and a best-practice is to use images from official repos on this line.
+
+The **RUN** instruction in a Dockerfile allows you to run commands inside the image. Each RUN instruction
+creates a single new layer.
+
+The **COPY** instruction in a Dockerfile adds files into the image as a new layer. It is common to use the COPY
+instruction to copy your application code into an image.
+
+The **EXPOSE** instruction in a Docker file documents the network port that the application uses.
+
+The **ENTRYPOINT** instruction in a Dockerfile sets the default application to run when the image is started as a
+container.
+
+Other Dockerfile instructions include LABEL, ENV , ONBUILD, HEALTHCHECK, CMD and more...
+
 
