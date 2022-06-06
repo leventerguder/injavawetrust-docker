@@ -965,3 +965,74 @@ You can't push images to repos in my Docker namespace, you will have to tag the 
 
     docker image push <you-account>/web:latest
     ...
+
+**Run the app**
+
+    docker container run -d --name c1 -p 80:8080 web:latest
+    docker container 
+
+http://localhost:80/
+
+**Looking a bit closer**
+
+The docker image build command parses the Dockerfile one-line-at-a-time starting from the top.
+
+All non-comment lines are Instructions and take the format INSTRUCTION argument. Instruction names are not case
+sensitive, but it's normal practice to write them in UPPERCASE.
+
+Some instructions create new layers, whereas others just add metadata to the image config file.
+
+Examples of instructions that create new layers are FROM,RUN, and COPY. Examples that create metadata include EXPOSE,
+WORKDIR, ENV, ENTRYPOINT. The basic premise is this - if an instruction is adding content such as files and programs to
+image, it will create a new layer. If it is adding instructions on how to build the image and run the application, it
+will create metadata.
+
+You can view the instructions that were used to build the image with **docker image history** command.
+
+    docker image history web:latest
+    docker image inspect web:latest
+
+## Moving to production with Multi-stage Builds
+
+When it comes to Docker images, big is bad.
+Big means slow. Big means hard to work with. And big means more potential vulnerabilities and possibly a bigger attack
+surface.
+
+For these reasons, Docker images should be small. The aim of the game is to only ship production images with the stuff
+needed to run your app in production.
+
+Multi-stage builds are all about optimizing builds without adding complexity. And they deliver on the promise.
+
+Multi-stage builds have a single Dockerfile containing multiple FROM instructions. Each FROM instruction is a new build
+stage that can easily COPY artefacts from previous stages.
+
+    FROM node:latest AS storefront
+    WORKDIR /usr/src/atsea/app/react-app
+    COPY react-app .
+    RUN npm install
+    RUN npm run build
+    
+    FROM maven:latest AS appserver
+    WORKDIR /usr/src/atsea
+    COPY pom.xml .
+    RUN mvn -B -f pom.xml -s /usr/share/maven/ref/settings-docker.xml dependency:resolve
+    COPY . .
+    RUN mvn -B -s /usr/share/maven/ref/settings-docker.xml package -DskipTests
+    
+    FROM java:8-jdk-alpine
+    RUN adduser -Dh /home/gordon gordon
+    WORKDIR /static
+    COPY --from=storefront /usr/src/atsea/app/react-app/build/ .
+    WORKDIR /app
+    COPY --from=appserver /usr/src/atsea/target/AtSea-0.0.1-SNAPSHOT.jar .
+    ENTRYPOINT ["java", "-jar", "/app/AtSea-0.0.1-SNAPSHOT.jar"]
+    CMD ["--spring.profiles.active=postgres"]
+
+The first thing to note is that the Dockerfile has three FROM instructions. Each of these constitutes a distinct build
+stage. Internally, they are numbered from top starting at 0.
+
+    Stage 0 is called storefront
+    Stage 1 is called appserver
+    Stage 2 is called production
+
+
