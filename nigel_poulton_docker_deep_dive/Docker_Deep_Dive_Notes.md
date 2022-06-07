@@ -1100,4 +1100,71 @@ container.
 
 Other Dockerfile instructions include LABEL, ENV , ONBUILD, HEALTHCHECK, CMD and more...
 
+# Chapter 09 - Deploying Apps with Docker Compose
 
+In this chapter we will focus on Docker Compose, which deploys and manages multi-container applications on Docker nodes
+running in single-engine mode. In a later chapter, we will focus on Docker Stacks.
+Stacks deploy and manage multi-container apps on Docker nodes running in swarm mode.
+
+## Deploying apps with Compose - The TLDR
+
+Deploying and managing lots of small microservices like these can be hard. This is where Docker Compose comes in to
+play.
+
+Instead of gluing each microservice together with scripts and long docker commands , Docker Compose lets you describe an
+entire app in a single declarative configuration file, and deploy it with a single command.
+
+## Deploying apps wih Compose - The Deep Dive
+
+### Compose Background
+
+In the beginning was Fig. Fig was a powerful tool, created by company called Orchard, and it was the best way to manage
+multi-container Docker apps. Docker, Inc acquired Orchard and re-branded FIg as Docker Compose.
+
+Compose is still an external Python binary that you have to install on a Docker host. You define multi-container apps in
+a YAML file, pass the YAML file to the **docker compose** command line, and Compose deploys it via the Docker API.
+
+### Installing Compose
+
+Docker Compose is installed as part of Docker Desktop for XXX. If you have Docker Desktop , you have Docker Compose.
+
+    docker-compose --version
+
+### Compose files
+
+Compose uses YAML files to define multi-service applications. YAML is a subset of JSON.
+The default name for Compose YAML file is docker-compose.yml. However, you can use the -f flag to specifiy custom
+filenames.
+
+```
+    version: "3.8"
+    services:
+      web-fe:
+        build: .
+        command: python app.py
+        ports:
+          - target: 5000
+            published: 5000
+        networks:
+          - counter-net
+        volumes:
+          - type: volume
+            source: counter-vol
+            target: /code
+      redis:
+        image: "redis:alpine"
+        networks:
+          counter-net:
+    networks:
+      counter-net:
+    volumes:
+      counter-vol:
+
+```
+
+The **version** key is mandatory, nad it's always the first line at the root of the file. This defines the version of
+the Compose file format. You should normally use the latest version.
+It's important to note that the **version** key does not define the version of Dockor Compose or the Docker Engine.
+
+
+The **services** keys is where you define the different microservices. This example defines two services;
