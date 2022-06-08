@@ -1166,5 +1166,68 @@ The **version** key is mandatory, nad it's always the first line at the root of 
 the Compose file format. You should normally use the latest version.
 It's important to note that the **version** key does not define the version of Dockor Compose or the Docker Engine.
 
+The **services** keys is where you define the different microservices. This example defines two services; wef-fe and
+redis. Compose will deploy each of these services as its own container.
 
-The **services** keys is where you define the different microservices. This example defines two services;
+The **networks** key tells Docker to create new networks. By default, Compose will create a bridge networks. These are
+single-host networks that can only connect containers on the same Docker host.
+
+The **volumes** keys is where you tell Docker to create new volumes.
+
+**Our specific Compose file**
+
+The services section has two second-level keys.
+
+- web-fe
+- redis
+
+This means Compose will deploy two containers, one will have web-fe in its name and the other will have redis.
+
+**build** : This tells Docker to build new image using the instruction in the Dockerfile in the current directory (.).
+
+**command** : python app.py , this tells Docker to run a Python app called app.py as the main app in the container. The
+app.py file must exist in the image, and the image must contain Python.
+
+**ports** : Tells Docker to map port 5000 inside the container (target) to port 5000 on the host(published). This means
+that traffic sent to the Docker host on port 5000 will be directed to port 5000 on the container.
+
+**networks** :  Tell Docker which network to attach the service's container to. The network should already exist, or be
+defined in the networks top-level key.
+
+**volumes**: Tells Docker to mount the counter-vol volume (source) to /code (target) inside the container. The counter
+volume needs to already exist or be defined in the volumes top-level key at the bottom of the file.
+
+As both services will be deployed onto the same counter-network , they will be able to resolve each other by name.
+This is important as the application is configured to communicate with the redis service by name.
+
+### Deploying an app with Compose
+
+Clone the Git repo locally.
+
+    git clone https://github.com/nigelpoulton/counter-app.git
+    cd counter-app
+    ls
+    ......    
+    Dockerfile		app.py			requirements.txt
+    README.md		docker-compose.yml
+
+Let's use Compose to bring the app up.
+
+    docker-compose up&
+
+The **docker-compose up** is the most common way to bring up a Compose app. It builds or pulls all required images,
+creates all required networks and volumes, and starts all required containers.
+
+By default, docker-compose up expects the name of the Compose file to docker-compose.yml. If your compose file has a
+different name, you need to specify it with the -f flag.
+
+    docker-compose -f prod-compose-file.yml
+
+It's also common to use the -d flag to bring the app up in the background.
+
+    docker-compose up -d
+
+Our example brought the app up in the foreground (we didn’t use the -d flag), but we used the & to give us the terminal
+window back. This forces Compose to output all messages to the terminal window.
+
+
