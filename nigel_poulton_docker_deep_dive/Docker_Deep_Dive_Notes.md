@@ -1230,4 +1230,70 @@ It's also common to use the -d flag to bring the app up in the background.
 Our example brought the app up in the foreground (we didn’t use the -d flag), but we used the & to give us the terminal
 window back. This forces Compose to output all messages to the terminal window.
 
+The following network and volume listings shows the counter-app_counter-net and counter-app_counter-vol
 
+    docker network ls
+
+    docker volume ls
+
+### Managing an App with Compose
+
+As the application is already up, let's see how to bring it down. To do this ;
+
+    docker-compose down
+
+It is important to note that the counter-vol volume was not deleted. This is because volumes are intended to be
+long-term persistent data stores.
+
+Also, any images that were built or pulled as part of the docker-compose up operation will still be present on the
+system. This means future deployments of the app will be faster.
+
+Use the following command to bring the app up again, but this time in the background.
+
+    docker-compose up -d
+
+Show the current state of the app with the docker-compose ps command
+
+    docker-compose ps
+
+Use docker-compose top to list the processes running inside of each service(container).
+
+    docker-compose top
+
+Use the docker-compose stop command to stop the app without deleting its resources.
+
+    docker-compose stop
+
+You can delete a stopped Compose app with docker-compose rm. This will delete the containers and networks the app is
+using, but it will not delete volumes or images.
+
+Restart the app with the docker-compose restart command.
+
+    docker-compose restart
+
+Use the docker-compose down command to stop and delete the app with a single command.
+
+    docker-compose down
+
+The app is now deleted. Only its images, volumes, and source code remain.
+
+## Deploying apps with Compose - The Commands
+
+**docker-compose up** is the command to deploy a Compose app. It expects the Compose file to be called
+docker-compose.yml or docker-compose.yaml , but you can specficy a custom filename with the -f flag.
+
+**docker-compose stop** will stop all of the containers in a Compose app without deleting them from the system. The app
+can be easily restarted with docker-compose restart.
+
+**docker-compose rm** will delete a stopped Compose app. It will delete containers and networks, but it will not delete
+volumes and images.
+
+**docker-compose restart** will restart a Compose app that has been stopped with docker-compose stop. If you have made
+changes to your Compose app since stopping it, these changes will not appear in the restarted app.
+You will need to re-deploy the app to get the changes.
+
+**docker-compose ps** will list each container in the Compose app. It shows current state, the command each one is
+running, and network ports.
+
+**docker-compose down** will stop and delete a running Compose app. It deletes containers and networks, but not vlumes
+and images.
