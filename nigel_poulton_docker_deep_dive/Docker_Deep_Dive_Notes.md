@@ -853,7 +853,7 @@ that you stop a container with the docker container stop command before deleting
 
 **docker container inspect** will show you detailed configuration and runtime information about a container.
 
-# Chapter 08 - Containerizing an app
+# Chapter 8 - Containerizing an app
 
 The process of taking an application and configuring it to run as a container is called “containerizing".
 
@@ -1100,7 +1100,7 @@ container.
 
 Other Dockerfile instructions include LABEL, ENV , ONBUILD, HEALTHCHECK, CMD and more...
 
-# Chapter 09 - Deploying Apps with Docker Compose
+# Chapter 9 - Deploying Apps with Docker Compose
 
 In this chapter we will focus on Docker Compose, which deploys and manages multi-container applications on Docker nodes
 running in single-engine mode. In a later chapter, we will focus on Docker Stacks.
@@ -1297,3 +1297,67 @@ running, and network ports.
 
 **docker-compose down** will stop and delete a running Compose app. It deletes containers and networks, but not vlumes
 and images.
+
+# Chapter 10 - Docker Swarm
+
+## Docker Swarm - The TLDR
+
+Docker Swarm is two main things;
+
+- An enterprise-grade secure cluster of Docker hosts.
+- An engine for orchestrating microservices apps.
+
+On the clustering front, Swarm groups one or more Docker nodes and lets you manage them as a cluster. Out-of-the-box you
+get an encrypted distributed cluster store, encrypted networks, mutual TLS, secure cluster join tokens, and a PKI that
+makes managing and rotating certificates a breeze.
+
+On the orchestration front, Swarm exposes a rich API that allows you to deploy and manage complex microservices apps
+with ease. You can define your apps in declarative manifest files and deploy them to the Swarm with native Docker
+commands. You can even perform rolling updates, rollbacks, and scaling operations.
+
+Docker Swarm competes directly with Kubernetes - they both orchestrate containerized applications.
+
+## Docker Swarm - The Deep Dive
+
+### Swarm Primer
+
+On the clustering front, a swarm consists of one or more Docker nodes. These can be physical servers, VMs, or cloud
+instances.
+
+Nodes are configured as managers or workers.
+
+The configuration and state of the swarm is held in a distributed etcd database located on all managers.
+It's kept in memory and is extremely up-to-date.
+
+Swarm uses TLS to encrypt communications, authenticate nodes, and authorize roles.
+
+On the application orchestration front, the atomic unit of scheduling on a swarm is the service. This is a new object in
+the API, introduced along with swarm, and higher level construct that wraps some advanced feature around containers.
+These include scaling, rolling updates, and simple rollbacks.
+
+### Build a secure Swarm cluster
+
+The nodes can be virtual machines, physical servers, cloud instances, or Raspberry Pi systems. The only requirements are
+that they have Docker installed and can communicate over a reliable network.
+
+Docker Desktop for Mac and Windows only supports a single Docker node. You can initialize a single-node swarm and follow
+along with most of the examples.
+
+**Initializing a new swarm**
+
+Running docker swarm init on a Docker host in single-engine mode will switch that node into swarm mode, create a new
+swarm and make the node the first manager of the swarm.
+
+    docker swarm init
+
+This tells Docker to initialize a new swarm and make this node the first manager. 
+
+List the nodes in the swarm.
+
+    docker node ls
+
+
+
+
+
+
