@@ -1350,14 +1350,74 @@ swarm and make the node the first manager of the swarm.
 
     docker swarm init
 
-This tells Docker to initialize a new swarm and make this node the first manager. 
+This tells Docker to initialize a new swarm and make this node the first manager.
+
+The default port that swarm mode operates on is 2377. This is customizable but it's convention to use 2377/tcp for
+secured HTTPS client-to-swarm-connections.
 
 List the nodes in the swarm.
 
     docker node ls
 
+### Swarm manager high availability (HA)
 
+Swarm managers have native support for high availability. This means one or more can fail , and the survivors will keep
+the swarm running. This means that although you have multiple managers, only one of them is active at any given moment.
+This active manager is called the "leader" , and the leader is the only one that will ever issue live commands against
+the swarm. If a follower manager(passive) receives commands for the swarm , it proxies them across to the leader.
 
+![](high-availability.png)
 
+This is Raft terminology, because swarm uses an implementation of the Raft consensus algorithm to maintain a consistent
+cluster state across multiple highly available managers.
 
+https://raft.github.io/
 
+- Deploy an odd number of managers
+- Don't deploy too many managers (3 or 5 is recommended)
+
+Having an odd number of managers reduces the chances of split-brain conditions. For example, if you had 4 managers and
+the network partitioned, you could be left with two managers on each side of the partition. This is known as a split
+brain - each side knows there used to be 4 but can not only see 2.
+
+### Built-in Swarm security
+
+Swarm clusters have a ton of built-in security that-s configured out-of-the box with sensible defaults.
+
+### Locking a Swarm
+
+Despite all of this built-in native security, restarting an older manager or restoring an old backup has the potential
+to compromise the cluster.
+
+To prevent situations like these, Docker allows you to lock a swarm with the Autolock feature. This forces restarted
+managers to present the cluster unlock key before being admitted back into the cluster.
+
+It's possible to apply a lock directly to a new swarm by passing the --autolock flag to the docker swarm init command.
+However, we've already built a swarm, so we'll lock our existing swarm with the docker swarm update command.
+
+    docker swarm update --autolock=true
+
+Be sure to keep the unlock key in a secure place. You can always check your current swarm unlock key with the docker
+swarm unlock-key command.
+
+Restart one of your manager nodes to see if it automatically re-joins the cluster.
+
+Try and list the nodes in the swarm.
+
+    docker node ls
+    ....
+    Error response from daemon: Swarm is encrypted and needs to be unlocked before it can be used. Please use "docker swarm
+    unlock" to unlock it.
+
+Although the Docker service has restarted on the manager, it has not been allowed to re-join the swarm.
+
+Use the docker swarm unlock command to unlock the swarm for the restarted manager.
+
+    docker swarm unlock
+
+### Swarm services
+
+Services let us specify most of the familiar container options, such as name, port mappings, attaching to networks and
+images. But they add important cloud native features desired state and automatic reconciliation. For example, swarm
+services allow us to declaratively define a desired state for an application that we can apply to swarm and let the
+swarm take care of deploying it and managing it.
