@@ -1421,3 +1421,98 @@ Services let us specify most of the familiar container options, such as name, po
 images. But they add important cloud native features desired state and automatic reconciliation. For example, swarm
 services allow us to declaratively define a desired state for an application that we can apply to swarm and let the
 swarm take care of deploying it and managing it.
+
+You can create services in one of two ways:
+
+- Imperatively on the command line with docker service create.
+- Declaratively with a stack file
+
+### Viewing and Inspecting Services
+
+You can use the docker service ls command to see a list of all services running on a swarm.
+
+### Replicated vs Global Services
+
+The default replication mode of a service is replicated. This deploys a desired number of replicas and distributes them
+as evenly as possible across the cluster.
+
+The other mode is global, which runs a single replica on every node in the swarm.
+
+To deploy a global service you need to pass the --mode global flag to the docker service create command.
+
+### Scaling a Service
+
+Another powerful feature of service is the ability to easily scale them up and down.
+
+    docker service scale web-fe=10
+    docker service ps web-fe
+
+### Removing a service
+
+The following docker service rm command will delete the service deployed earlier.
+
+    docker service rm web-fe
+    docker service ls
+
+Be careful using the docker service rm command as it deletes all service replicas without asking for confirmation.
+
+### Rolling updates
+
+We’re going to deploy a new service. But before we do that, we’re going to create a new overlay network for the service.
+This isn’t necessary, but I want you to see how it is done and how to attach the service to it.
+
+    docker network create -d overlay uber-net
+
+Run a docker network ls to verify that the network created properly and is visible on the Docker host.
+
+    docker network ls
+
+    docker service create --name uber-svc \
+    --network uber-net \
+    -p 80:80 --replicas 12 \
+    nigelpoulton/tu-demo:v1
+
+Let’s also assume that you’ve been tasked with pushing the updated image to the swarm in a staged manner — 2 replicas at
+a time with a 20 seconds delay between each. You can use the following docker service update command to accomplish this.
+
+    docker service update \
+    --image nigelpoulton/tu-demo:v2 \
+    --update-parallelism 2 \
+    --update-delay 20s uber-svc
+
+### Backing up Swarm
+
+Backing up a swarm will backup the control plane objects required to recover the swarm in the event of a catastrophic
+failure of corruption. Recovering a swarm from a backup is an extremely rare scenario. However, business critical
+environments should always be prepared for worst-case scenarios.
+
+### Docker Swarm - The Commands
+
+**docker swarm init** is the command to create a new swarm. The node that you run the command on becomes the first
+manager
+and is switched to run in swarm mode.
+
+**docker swarm join-token** reveals the commands and tokens needed to join workers and managers to existing swarms. To
+expose the command to join a new manager, use the docker swarm join-token manager command. To get the command to join a
+worker, use the docker swarm join-token worker command.
+
+**docker node ls** lists all nodes in the swarm including which are managers and which is the leader.
+
+**docker service create** is the command to create a new service.
+
+**docker service ls** lists running services in the swarm and gives basic info on the state of the service and any
+replicas it’s running.
+
+**docker service ps <service>** gives more detailed information about individual service replicas.
+
+**docker service inspect** gives very detailed information on a service. It accepts the --pretty flag to
+limit the information returned to the most important information.
+
+**docker service scale** lets you scale the number of replicas in a service up and down.
+
+**docker service update** lets you update many of the properties of a running service.
+
+**docker service logs** lets you view the logs of a service.
+
+**docker service rm** is the command to delete a service from the swarm. Use it with caution as it deletes
+all service replicas without asking for confirmation.
