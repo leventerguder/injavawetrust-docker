@@ -1516,3 +1516,103 @@ limit the information returned to the most important information.
 
 **docker service rm** is the command to delete a service from the swarm. Use it with caution as it deletes
 all service replicas without asking for confirmation.
+
+# Chapter 11 Docker Networking
+
+## Docker Networking - The TLDR
+
+Docker run applications inside of containers, and applications need to communicate over lots of different networks.
+This means Docker needs strong networking capabilities.
+
+Docker networking is based on an open-source pluggable architecture called the Container Network Model (CNM).
+**libnetwork** is Docker's real-world implementation of the CNM, and it provides all of Docker's core networking
+capabilities.
+
+To create a smooth out-of-the box experience, Docker ships with a set of native drivers that deal with the most common
+networking requirements. These include single-host bridge networks, multi-host overlays, and options for plugging into
+existing VLANs.
+
+## Docker Networking - The Deep Dive
+
+### The theory
+
+At the highest level, Docker networking comprises three major components:
+
+- The Container Network Model (CNM)
+- The libnetwork
+- Drivers
+
+The CNM is the design specification.It outlines the fundamental building blocks of a Docker network.
+
+The libnetwork is real-world implementation of the CNM, and is used by Docker. It's written in Go, implements the core
+components outlined in the CNNM.
+
+Drivers extend the model by implementing specific netwok topologies such as VXLAN overlay networks.
+
+**The Container Network Model (CNM)**
+
+The design guide for Docker networking is the CNM. It outlines the fundamental building blocks of a Docker network.
+
+It defines three major building blocks:
+
+- Sandboxes
+- Endpoints
+- Networks
+
+A sandbox is an isolated network stack. It includes ; Ethernet interfaces , ports, routing tables and DNS config.
+
+Endpoints are virtual network interfaces. Like normal network interfaces , they're responsible for making connections.
+
+Networks are a software implementation of an switch (802.1d bridge). As such, they group together and isolate a
+collection of endpoints that need to communicate.
+
+![img.png](container-network-model.png)
+
+**libnetwork**
+
+The CNM is the design doc, and libnetwork is the canonical implementation. It's open-source, written in GO,
+cross-platform , and used by Docker.
+
+All of the core Docker networking code lives in libnetwork.
+
+**Drivers**
+
+IF libnetwork implements the control plane and management plane functions, then drivers implement the date plane.
+For example, connectivity and isolation are all handled by drivers.
+
+Docker ships with several built-in drivers, known as native drivers or local drivers. On Linux they include; bridge,
+overlay, and macvlan. On Windows they include; nat, overlay, transparent, and l2bridge.
+
+3rd-parties can also write Docker network drivers known as remote drivers or plugins.
+
+### Single-host bridge networks
+
+The simplest type of Docker network is the single-host bridge network.
+
+- Single-host tells us it only exists on a single docker host and can only connect containers that are on the same host.
+- Bridge tells us that it's an implementation of an 802.1d bridge.
+
+Docker on Linux creates single-host bridge networks with the built-in bridge driver, whereas Docker on Windows creates
+them using the built-in nat driver.
+
+The following listing shows the output of a docker network ls command on newly installed Linux and Windows Docker hosts
+
+    docker network ls
+    docker network inspect bridge
+
+Docker networks built with the bridge driver on Linux hosts are based on the battle-hardened linux bridge technology
+that has existed in the Linux kernel for nearly 20 years. This means they’re high performance and extremely stable.
+
+The default "bridge" network, on all Linux based Docker hosts, maps to an underlying Linux bridge in the kernel called "docker0".
+
+    docker network inspect bridge | grep bridge.name
+    ...
+    "com.docker.network.bridge.name": "docker0"
+
+
+![img.png](docker-linux-network.png)
+
+Let's use the **docker network create** command to create a new single-host bridge network called  "localnet".
+
+    docker network create -d bridge localnet
+    docker network ls
