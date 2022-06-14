@@ -1603,12 +1603,12 @@ The following listing shows the output of a docker network ls command on newly i
 Docker networks built with the bridge driver on Linux hosts are based on the battle-hardened linux bridge technology
 that has existed in the Linux kernel for nearly 20 years. This means they’re high performance and extremely stable.
 
-The default "bridge" network, on all Linux based Docker hosts, maps to an underlying Linux bridge in the kernel called "docker0".
+The default "bridge" network, on all Linux based Docker hosts, maps to an underlying Linux bridge in the kernel called "
+docker0".
 
     docker network inspect bridge | grep bridge.name
     ...
     "com.docker.network.bridge.name": "docker0"
-
 
 ![img.png](docker-linux-network.png)
 
@@ -1616,3 +1616,45 @@ Let's use the **docker network create** command to create a new single-host brid
 
     docker network create -d bridge localnet
     docker network ls
+
+Let’s create a new container and attach it to the new localnet bridge network.
+
+    docker container run -d --name c1 \
+    --network localnet \
+    alpine sleep 1d
+
+This container will now be on the localnet network. You can confirm this with a docker network inspect.
+
+    docker network inspect localnet --format '{{json .Containers}}'
+
+If we add another new container to the same network, it should be able to ping the "c1" container by name. This is
+because all new containers are automatically registered with the embedded Docker DNS service, enabling them to resolve
+the names of all other containers on the same network.
+
+Create a new interactive container called "c2" and putit on the same localnet network as "c1"/
+
+    docker container run -it --name c2 \
+    --network localnet \
+    alpine sh
+
+    ...
+    ping c1
+
+Port mappings let you map a container to a port on the Docker host. Any traffic hitting the Docker host on the
+configured port will be directed to the container.
+
+Run a web server container and map port 80 on the container to port 5000 on the Docker host.
+
+    docker container run -d --name web \
+    --network localnet \
+    --publish 5000:80 \
+    nginx
+
+### Multi-host overlay networks
+
+Overlay networks are multi-host. They allow a single network to span multiple hosts so that containers on different
+hosts can communicate directly. They’re ideal for container-to-container communication, including container-only
+applications, and they scale well.
+
+Docker provides a native driver for overlay networks. This makes creating them as simple as adding the --d overlay flag
+to the docker network create command.

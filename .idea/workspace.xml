@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8861b2fd-68e9-4647-8987-4e3cc8dbb9f8" name="Changes" comment="Docker_Deep_Dive_Notes chapter02 &amp; chapter03">
+      <change afterPath="$PROJECT_DIR$/.idea/git_toolbox_prj.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/index.pb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nigel_poulton_docker_deep_dive/Docker_Deep_Dive_Notes.md" beforeDir="false" afterPath="$PROJECT_DIR$/nigel_poulton_docker_deep_dive/Docker_Deep_Dive_Notes.md" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitToolBoxStore">
+    <option name="projectConfigVersion" value="5" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="userSettingsFile" value="$USER_HOME$/.m2/settings-sap.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="29cBsj5SrUOeNK5gLsPlkeESU0f" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/levent/Workspace/git/injavawetrust-docker/nigel_poulton_docker_deep_dive&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/nigel_poulton_docker_deep_dive" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/nigel_poulton_docker_deep_dive" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8861b2fd-68e9-4647-8987-4e3cc8dbb9f8" name="Changes" comment="" />
+      <created>1653402703989</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1653402703989</updated>
+      <workItem from="1653402705294" duration="6458000" />
+      <workItem from="1653455683352" duration="105000" />
+      <workItem from="1653455795184" duration="1780000" />
+      <workItem from="1653460129886" duration="7000" />
+      <workItem from="1653754724776" duration="1272000" />
+      <workItem from="1653757184661" duration="4171000" />
+      <workItem from="1653792060038" duration="9000" />
+      <workItem from="1653792071596" duration="3277000" />
+      <workItem from="1653887074315" duration="1013000" />
+      <workItem from="1653966509139" duration="2670000" />
+      <workItem from="1654050860412" duration="1824000" />
+      <workItem from="1654137336721" duration="2247000" />
+      <workItem from="1654139611578" duration="487000" />
+      <workItem from="1654223302861" duration="2790000" />
+      <workItem from="1654311975404" duration="4842000" />
+      <workItem from="1654395793298" duration="2875000" />
+      <workItem from="1654487088363" duration="3528000" />
+      <workItem from="1654518044290" duration="2427000" />
+      <workItem from="1654520489726" duration="2761000" />
+      <workItem from="1654569451002" duration="1989000" />
+      <workItem from="1654655526344" duration="2341000" />
+      <workItem from="1654741666918" duration="2085000" />
+      <workItem from="1654828022878" duration="2926000" />
+      <workItem from="1654919822976" duration="2869000" />
+      <workItem from="1655006046740" duration="56000" />
+      <workItem from="1655009958753" duration="2412000" />
+      <workItem from="1655090610962" duration="3378000" />
+      <workItem from="1655176929559" duration="2354000" />
+    </task>
+    <task id="LOCAL-00001" summary="Docker_Deep_Dive_Notes chapter01">
+      <created>1653412361313</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1653412361313</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Docker_Deep_Dive_Notes chapter02 &amp; chapter03">
+      <created>1653460044009</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1653460044009</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Docker_Deep_Dive_Notes Chapter05">
+      <created>1653795333461</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1653795333461</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Docker_Deep_Dive_Notes Chapter05">
+      <created>1653888257375</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1653888257375</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Docker_Deep_Dive_Notes Chapter 6 - Images">
+      <created>1653969147329</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1653969147329</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Docker_Deep_Dive_Notes Chapter06">
+      <created>1654053250246</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1654053250246</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Docker_Deep_Dive_Notes chapter6 images">
+      <created>1654139950569</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1654139950569</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Docker_Deep_Dive_Notes Chapter07 Containers">
+      <created>1654225844299</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1654225844299</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Docker_Deep_Dive_Notes Chapter07 Container">
+      <created>1654317655623</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1654317655623</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Docker_Deep_Dive_Notes chapter08">
+      <created>1654398625572</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1654398625572</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Docker_Deep_Dive_Notes Chapter08">
+      <created>1654490021829</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1654490021829</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Docker_Deep_Dive_Notes Chapter08">
+      <created>1654527798446</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1654527798446</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Docker_Deep_Dive_Notes Chapter09">
+      <created>1654572402357</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1654572402357</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Docker_Deep_Dive_Notes Chapter09">
+      <created>1654658643997</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1654658643997</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Docker_Deep_Dive_Notes Chapter09">
+      <created>1654744247978</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1654744247978</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Docker_Deep_Dive_Notes Chapter10">
+      <created>1654831719139</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1654831719139</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Docker_Deep_Dive_Notes Chapter10">
+      <created>1654923533579</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1654923533579</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Docker_Deep_Dive_Notes Chapter10">
+      <created>1655013252632</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1655013252632</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Docker_Deep_Dive_Notes Chapter11">
+      <created>1655093678918</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1655093678918</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Docker_Deep_Dive_Notes chapter01" />
+    <MESSAGE value="Docker_Deep_Dive_Notes chapter02 &amp; chapter03" />
+    <MESSAGE value="Docker_Deep_Dive_Notes Chapter05" />
+    <MESSAGE value="Docker_Deep_Dive_Notes Chapter 6 - Images" />
+    <MESSAGE value="Docker_Deep_Dive_Notes Chapter06" />
+    <MESSAGE value="Docker_Deep_Dive_Notes chapter6 images" />
+    <MESSAGE value="Docker_Deep_Dive_Notes Chapter07 Containers" />
+    <MESSAGE value="Docker_Deep_Dive_Notes Chapter07 Container" />
+    <MESSAGE value="Docker_Deep_Dive_Notes chapter08" />
+    <MESSAGE value="Docker_Deep_Dive_Notes Chapter08" />
+    <MESSAGE value="Docker_Deep_Dive_Notes Chapter09" />
+    <MESSAGE value="Docker_Deep_Dive_Notes Chapter10" />
+    <MESSAGE value="Docker_Deep_Dive_Notes Chapter11" />
+    <option name="LAST_COMMIT_MESSAGE" value="Docker_Deep_Dive_Notes Chapter11" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>
