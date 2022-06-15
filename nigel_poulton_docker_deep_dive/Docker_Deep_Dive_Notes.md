@@ -1658,3 +1658,105 @@ applications, and they scale well.
 
 Docker provides a native driver for overlay networks. This makes creating them as simple as adding the --d overlay flag
 to the docker network create command.
+
+### Connecting to existing networks
+
+The following command will create a new MACVLAN network called “macvlan100” that will connect containers to VLAN 100.
+
+    docker network create -d macvlan \
+    --subnet=10.0.0.0/24 \
+    --ip-range=10.0.0.0/25 \
+    --gateway=10.0.0.1 \
+    -o parent=eth0.100 \
+    macvlan100
+
+MACVLAN uses standard Linux sub-interfaces, and you have to tag them with the ID of the VLAN they will connect to. In
+this example we’re connecting to VLAN 100, so we tag the sub-interface with .100 (etho.100).
+
+The macvlan100 network is ready for containers, so let’s deploy one with the following command.
+
+    docker container run -d --name mactainer1 \
+    --network macvlan100 \
+    alpine sleep 1d
+
+### Service Discovery
+
+As well as core networking, libnetwork also provides some important network services.
+
+Service discovery allows all containers and Swarm services to locate each other by name. The only requirement is that
+they be on the same network.
+
+Under the hood, this leverages Docker's embedded DNS server and the DNS resolver in each container.
+
+Every Swarm service and standalone container started with the --name flag will register its name and IP with the Docker
+DNS service. This means all containers and service replicas cna use the Docker DNS service to find each other.
+
+However, service discovery is network-scoped. This means that name resolution only works for containers and Services on
+the same network. If two containers are on different networks, they will not be able to resolve each other.
+
+It's possible to configure Swarm services and standalone containers with customized DNS options.
+For example, the --dns flag lets you specify a list of custom DNS servers to use in case the embedded Docker DNS server
+cannot resolve a query.
+
+    docker container run -it --name con1 \
+    --dns=8.8.8.8 \
+    --dns-search=nigelpoulton.com \
+    alpine sh
+
+### Ingress load balancing
+
+Swarm supports two publishing modes that make services accessible outside of the cluster:
+
+- Ingress mode (default)
+- Host mode
+
+Services published via ingress mode can be accessed from any node in the Swarm - even nodes not running a service
+replica.
+
+Services published via host mode can only be accessed by hitting nodes running service replicas.
+
+Ingress mode is the default. This means any time you publish a service with -p or --publish it will default to ingress
+mode. To publish a service in host mode you need to use the long format of the --publish flag and add mode=host. Let’s
+see an example using host mode.
+
+Behind the scenes, ingress mode uses a layer 4 routing mesh called the Service Mesh or the Swarm Mode Service Mesh.
+
+## Docker Networking - The Commands
+
+**docker network ls** : Lists all networks on the local Docker host.
+
+**docker network create** : Creates new Docker networks. By default, it creates them with the nat driver
+on Windows and the bridge driver on Linux. You can specify the driver (type of network) with the -d flag. docker network
+create -d overlay overnet will create a new overlay network called overnet with the native Docker overlay driver.
+
+**docker network inspect** : Provides detailed configuration information about a Docker network.
+
+**docker network prune** : Deletes all unused networks on a Docker host.
+
+**docker network rm**: Deletes specific networks on a Docker host.
+
+## Chapter Summary
+
+The Container Network Model (CNM) is the master design document for Docker networking and defines the three major
+constructs that are used to build Docker networks — sandboxes, endpoints, and networks.
+
+libnetwork is the open-source library, written in Go, that implements the CNM. It’s used by Docker and is where all of
+the core Docker networking code lives. It also provides Docker’s network control plane and management plane.
+
+Drivers extend the Docker network stack (libnetwork) by adding code to implement specific network types, such as bridge
+networks and overlay networks. Docker ships with several built-in drivers, but you can also use 3rd-party drivers.
+
+Single-host bridge networks are the most basic type of Docker network and are suitable for local development and very
+small applications. They do not scale, and they require port mappings if you want to publish your services outside of
+the network. Docker on Linux implements bridge networks using the built-in bridge driver, whereas Docker on Windows
+implements them using the built-in nat driver.
+
+Overlay networks are all the rage and are excellent container-only multi-host networks. We’ll talk about them in-depth
+in the next chapter.
+
+The macvlan driver (transparent on Windows) allows you to connect containers to existing physical networks and VLANs.
+They make containers first-class citizens by giving them their own MAC and IP addresses. Unfortunately, they require
+promiscuous mode on the host NIC, meaning they won’t work in the public cloud.
+
+Docker also uses libnetwork to implement basic service discovery, as well as a service mesh for container-based load
+balancing of ingress traffic.
