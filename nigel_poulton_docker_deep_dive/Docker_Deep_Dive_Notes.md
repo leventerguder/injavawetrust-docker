@@ -1760,3 +1760,66 @@ promiscuous mode on the host NIC, meaning they won’t work in the public cloud.
 
 Docker also uses libnetwork to implement basic service discovery, as well as a service mesh for container-based load
 balancing of ingress traffic.
+
+# Chapter 12 - Docker Overlay networking
+
+Overlay networks are at the beating heart of many cloud-native microservices apps.
+
+## Docker Overlay networking - The TLDR
+
+In the real world, it's vital that containers can communicate with each other reliably and securely, even when they're
+on different hosts that are on different networks. This is where overlay networking comes in to play.
+It allows you to create a flat, secure, layer-2 network, spanning multiple hosts. Containers connect to this and can
+communicate directly.
+
+Docker offers native overlay networking that is simple to configure and secure by default.
+
+Behind the scenes, it's built on top of libnetwork and drivers. libnetwork is the canonical implementation of the
+Container Network Model (CNM) and drivers are pluggable components that implement different networking technologies and
+topologies. Docker offers native drivers, including the overlay driver.
+
+## Docker Overlay networking - The Deep dive
+
+    docker network create -d overlay uber-net
+    docker network ls
+
+### Attach a service to the overlay network
+
+Now that you have an overlay network, let's create a new Docker service and attach it to the network.
+
+    docker service create --name test \
+    --network uber-net \
+    --replicas 2 \
+    ubuntu sleep infinity
+
+Verify the operation with a docker service ps command.
+
+    docker service ps test
+
+### The theory of how it all works
+
+**VXLAN Primer**
+
+Docker overlay networking uses VXLAN tunnels to create virtual Layer 2 overlay networks.
+At the highest level, VXLANs let you create a virtual Layer2 network on top of existing Layer3 infrastructure.
+
+The beauty of VXLAN is that it’s an encapsulation technology that existing routers and network infrastructure just see
+as regular IP/UDP packets and handle without issue.
+Each end of the VXLAN tunnel is terminated by a VXLAN Tunnel Endpoint (VTEP).
+
+## Docker overlay networking - The commands
+
+**docker network create** is the command that we use to create a new container network. The -d flag lets you specify the
+driver to use, and the most common driver is the overlay driver. You can also specify remote drivers from 3rd parties.
+For overlay networks, the control plane is encrypted by default. Just add the -o encrypted flag to encrypt the data
+plane (performance overheads may be incurred).
+
+**docker network ls** lists all of the container networks visible to a Docker host. Docker hosts running in swarm mode
+only
+see overlay networks if they are hosting containers attached to that particular network. This keeps network-related
+gossip to a minimum.
+
+**docker network inspect** shows you detailed information about a particular container network. This includes scope,
+driver, IPv4 and IPv4 info, subnet configuration, IP addresses of connected containers, VXLAN network ID, and encryption state.
+
+**docker network rm** deletes a network
