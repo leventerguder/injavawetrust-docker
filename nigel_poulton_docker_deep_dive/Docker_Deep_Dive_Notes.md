@@ -1820,6 +1820,78 @@ see overlay networks if they are hosting containers attached to that particular 
 gossip to a minimum.
 
 **docker network inspect** shows you detailed information about a particular container network. This includes scope,
-driver, IPv4 and IPv4 info, subnet configuration, IP addresses of connected containers, VXLAN network ID, and encryption state.
+driver, IPv4 and IPv4 info, subnet configuration, IP addresses of connected containers, VXLAN network ID, and encryption
+state.
 
 **docker network rm** deletes a network
+
+# Volumes and persistent data
+
+Stateful applications that persist data are becoming more and more important in the world of cloud-native and
+microservices applications.
+
+## Volumes and persistent data - The TLDR
+
+To deal with non-persistent data, every Docker container gets is own non-persistent storage. This is automatically
+created for every container and is tighttly coupled to the lifecycle of the container.
+
+As a result , deleting the container will delete the storage and any data on it.
+
+To deal with persistent data, a container needs to store it in a volume. Volumes are separate objects that have their
+lifecycle decoupled from containers.
+This means you can create and manage volumes independently, and they are not tied to the lifecycle of container.
+
+## Volumes and persistent data - The Deep Dive
+
+### Containers and non-persistent data
+
+Containers are designed to be immutable.
+
+The writable container layer exists in the filesystem of the Docker host, and you’ll hear it called various names.
+These include local storage, ephemeral storage, and graphdriver storage.
+
+This thin writable layer is an integral part of a container and enables all read/write operations. If you, or an
+application, update files or add new files, they’ll be written to this layer. However, it’s tightly coupled to the
+container’s lifecycle - it gets created when the container is created and it gets deleted when the container is deleted.
+
+If your containers don’t create persistent data, this thin writable layer of local storage will be fine and you’re good
+to go.
+
+This writable layer of local storage is managed on every Docker host by a storage driver (not to be confused with a
+volume driver).
+
+### Containers and persistent data
+
+Volumes are the recommended way to persist data in containers.
+
+- Volumes are independent objects that are not tied to the lifecycle of a containers
+- Volumes can be mapped to specialized external storage systems.
+- Volumes enable multiple containers on different Docker hosts to access and share the same data
+
+Docker volume existing outside of the container as a separate object. It is mounted into the container's filesystem ,
+and any data written to the dicertory will be stored on the volume and will exist after the container is deleted.
+
+![](high-level-view-volumes-containers.png)
+
+**Creating and managing Docuker volumes**
+
+    docker volume create myvol
+
+By default, Docker creates new volumes with the built-in local driver. As the name suggests, volumes created with the
+local driver are only available to containers on the same node as the volume. You can use the -d flag to specify a
+different driver.
+
+    docker volume ls
+    docker volume inspect myvol
+
+Notice that the Driver and Scope are both local. This means the volume was created with the local driver and is only
+available to containers on this Docker host.
+
+There are 2 ways to delete a Docker volume :
+
+    docker volume prune
+    docker volume rm
+
+docker volume prune will delete all volumes that are not mounted into a container or service replica, so use with
+caution! docker volume rm lets you specify exactly which volumes you want to delete. Neither command will delete a
+volume that is in use by a container or service replica.
