@@ -1895,3 +1895,81 @@ There are 2 ways to delete a Docker volume :
 docker volume prune will delete all volumes that are not mounted into a container or service replica, so use with
 caution! docker volume rm lets you specify exactly which volumes you want to delete. Neither command will delete a
 volume that is in use by a container or service replica.
+
+### Demonstrating Volumes with Containers and Services
+
+    docker container run -dit --name voltainer \
+    --mount source=bizvol,target=/vol \
+    alpine
+
+The command uses the --mount flag to mount a volume called "bizvol" into the container at either /vol.
+The command completes successfully despite the fact there is no volume on the system called bizvol. This raises an
+interesting point:
+
+- If you specify an existing volume , Docker will use the existing volume
+- If you specify a volume that doesn't exist, Docker will create it for you.
+
+  docker volume ls
+
+Although containers and volumes have separate lifecycle , you can not delete a volume that is in use by a container.
+
+    docker volume rm bizvol
+
+Lets exec onto the container and write some data to it.
+
+    docker container exec -it voltainer sh
+    echo "I promise to write a review of the book on Amazon" > /vol/file1
+    exit
+
+    docker container rm voltainer -f
+
+Even though the container is deleted, the volume still exists :
+
+    docker volume ls
+
+It's even possible to mount the bizvol volume into a new service or container.
+
+    docker container run -it --name hell-cat \
+    --mount source=bizvol,target=/vol \
+    alpine sh
+
+    cat /vol/file1
+
+### Sharing storage across cluster nodes
+
+Integrating external storage systems with Docker makes it possible to share volumes between cluster nodes. These
+external systems can be cloud storage services or enterprise storage systems in your on-premises data centers.
+
+A major concern with any configuration that shares a single volume among multiple containers is data corruption.
+
+## Volumes and persistent data - The Commands
+
+**docker volume create** is the command we use tho create new volumes. By default, volumes are created with the local
+driver, but you can use the -d flag to specify a different driver.
+
+**docker volume ls** will list all volumes on the local Docker host.
+
+**docker volume inspect** shows detailed volume information. Use this command to see many interesting volume properties.
+
+**docker volume prune** will delete all volumes that are not in use by a container or service replica. Use with caution!
+
+**docker volume rm** deletes specific volumes that are not in use.
+
+**docker plugin install** with install new volume plugins from Docker Hub.
+
+**docker plugin ls** list all plugins installed on a Docker host.
+
+## Chapter Summary
+
+There are two main types of data: persistent and non-persistent data. Persistent data is data that you need to keep,
+non-persistent is data that you don’t need to keep. By default, all containers get a layer of writable non-persistent
+storage that lives and dies with the container — we call this local storage and it’s ideal for non-persistent data.
+However, if your containers create data that you need to keep, you should store the data in a Docker volume.
+
+Docker volumes are first-class citizens in the Docker API and managed independently of containers with their own docker
+volume sub-command. This means that deleting a container will not delete the volumes it was using.
+
+Third party volume plugins can provide Docker access to specialised external storage systems. They’re installed from
+Docker Hub with the docker plugin install command and are referenced at volume creation time with the -d command flag.
+
+Volumes are the recommended way to work with persistent data in a Docker environment.
