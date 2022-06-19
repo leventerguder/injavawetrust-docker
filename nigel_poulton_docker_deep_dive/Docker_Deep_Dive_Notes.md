@@ -1973,3 +1973,225 @@ Third party volume plugins can provide Docker access to specialised external sto
 Docker Hub with the docker plugin install command and are referenced at volume creation time with the -d command flag.
 
 Volumes are the recommended way to work with persistent data in a Docker environment.
+
+# Chapter 14  Deploying apps with Docker Stacks
+
+Deploying and managing cloud-native microservices applications comprising lots of small integrated services at scale is
+hard. Fortunately, Docker Stacks are here to help. They simplify application management by providing; desired state,
+rolling updates, simple, scaling operations, health checks, and more! All wrapped in a nice declarative model.
+
+## Deploying apps with Docker Stacks - The TLDR
+
+Fortunately, stacks are here to help!. They let you define complex multi-service apps in a single declarative file. They
+also provide a simple way to deploy the app and manage its entire lifecycle — initial deployment > health checks >
+scaling > updates > rollbacks and more!
+
+Define the desired state of your app in a Compose file, then deploy and manage it with the docker stack command. That’s
+it.
+
+The Compose file includes the entire stack of microservices that make up the app. It also includes all of the volumes,
+networks, secrets, and other infrastructure the app needs. The docker stack deploy command is used to deploy the entire
+app from the single file.
+
+To accomplish all of this, stacks build on top of Docker Swarm, meaning you get all of the security and advanced
+features that come with Swarm.
+
+In a nutshell, Docker is great for application development and testing. Docker Stacks are great for scale and
+production.
+
+## Deploying apps with Docker Stacks - The Deep Dive
+
+Architecturally speaking, stacks are at the top of the Docker application hierarchy. They build on top of services,
+which in turn build on top of containers.
+
+### Overview of the sample app
+
+    git clone https://github.com/dockersamples/atsea-sample-shop-app.git
+    ...
+    cat docker-stack.yml
+
+At the highest level, it defines 4 top-level keys.
+
+- version:
+- services:
+- networks:
+- secrets:
+
+The **version** indicates version of the Compose file format. This has to be 3.0 or higher to work with stacks.
+The **services** is where you define the stack of services that make up the app.
+
+The **networks** list the required networks and, the **secret** define the secrets the app uses.
+
+It's important to understand that the stack file captures and defines many of the requirements of the entire
+application.
+As such, it's self-documenting and a great tool for bridging the gap between dev and ops.
+
+### Looking closer at the stack file
+
+Stack files are very similar to Compose files.
+
+**Networks**
+
+One of the first things Docker does when deploying an app from a stack file is create any required networks list under
+the networks key. If the networks don't already exist, Docker creates them.
+
+    networks:
+        front-tier:
+        back-tier:
+        payment:
+          driver: overlay
+          driver_opts:
+            encrypted: 'yes'
+
+The stack file describes three networks; front-tier, back-tier, and payment. By default, they’ll all be created as
+overlay networks by the overlay driver. But the payment network is special — it requires an encrypted data plane.
+
+To encrypt the data plane, you have two choices:
+
+- Pass the -o encrypted flag to the docker network create command.
+- Specify encrypted : 'yes' under driver_opts in the stack file.
+
+**Secrets**
+
+    secrets:
+      postgres_password:
+        external: true
+      staging_token:
+        external: true
+      revprox_key:
+        external: true
+      revprox_cert:
+        external: true  
+
+Notice that all four are defined as external. This means that they must already exist before the stack can be
+deployed.
+
+**Services**
+
+Services are where most of the action happens.
+Each service is a JSON collection (dictionary) that contains a bunch of keys.
+
+**The reverse_proxy service**
+
+    reverse_proxy:
+      image: dockersamples/atseasampleshopapp_reverse_proxy
+      ports:
+        - "80:80"
+        - "443:443"
+      secrets:
+        - source: revprox_cert
+        target: revprox_cert
+        - source: revprox_key
+        target: revprox_key
+      networks:
+        - front-tier
+
+The **image** key is the only mandatory key in the service object. As the name suggests, it defines the Docker image
+that will be used to build the replicas for the service.
+
+Docker is opinionated, so unless you specify otherwise, the image will be pulled from Docker Hub. You can specify images
+from 3rd-party registries by prepending the image name with the DNS name of the registry’s API endpoint such as gcr.io
+for Google’s container registry.
+
+One difference between Docker Stacks and Docker Compose is that stacks do not support builds. This means all images have
+to be built prior to deploying the stack.
+
+By default, all ports are mapped using ingress mode. This means they’ll be mapped and accessible from every node in the
+Swarm — even nodes not running a replica.
+
+The secrets key defines two secrets — revprox_cert and revprox_key. These secrets must already exist on the swarm and
+must also be defined in the top-level secrets section of the stack file.
+
+The networks key ensures that all replicas for the service will be attached to the front-tier network.
+
+**The database service**
+
+The database service also defines; an image, a network, and a secret. As well as those, it introduces environment
+variables and placement constraints.
+
+    database:
+      image: dockersamples/atsea_db
+      environment:
+        POSTGRES_USER: gordonuser
+        POSTGRES_DB_PASSWORD_FILE: /run/secrets/postgres_password
+        POSTGRES_DB: atsea
+      networks:
+        - back-tier
+      secrets:
+        - postgres_password
+      deploy:
+        placement:
+          constraints:
+            - 'node.role == worker'
+
+The environment key lets you inject environment variables into service replicas at runtime. This service uses three
+environment variables to define a dataase user, the location of database password , and the name of tha database.
+
+**The appserver service**
+
+The appserver service uses an image, attaches to three networks, and mounts a secret. It also introduces several
+additional features under the deploy key.
+
+    appserver:
+      image: dockersamples/atsea_app
+      networks:
+        - front-tier
+        - back-tier
+        - payment
+      deploy:
+        replicas: 2
+        update_config:
+          parallelism: 2
+          failure_action: rollback
+        placement:
+          constraints:
+            - 'node.role == worker'
+        restart_policy:
+          condition: on-failure
+          delay: 5s
+          max_attempts: 3
+          window: 120s
+      secrets:
+        - postgres_password
+
+First up,services.appserver.deploy.replicas = 2 will set the desired number of replicas for the service to 2. If omitted
+, the default value is 1.
+
+services.appserver.deploy.update_config tells Docker how to act when updating the service. For this service, Docker will
+update two replicas at-a-time (parallelism) and will perform a ‘rollback’ if it detects the update is failing.
+
+The services.appserver.deploy.restart-policy object tells Swarm how to restart replicas (containers) if and when they
+fail. The policy for this service will restart a replica if it stops with a non-zero exit code (condition: on-failure).
+It will try to restart the failed replica 3 times, and wait up to 120 seconds to decide if the restart worked. It will
+wait 5 seconds between each of the three restart attempts.
+
+    restart_policy:
+      condition: on-failure
+      delay: 5s
+      max_attempts: 3
+      window: 120s
+
+**The payment_gateway service**
+
+The payment_gateway service specifies an image, mounts a secret, attaches to a network, defines a partial deployment
+strategy, and then imposes a couple of placement constraints.
+
+    payment_gateway:
+      image: dockersamples/atseasampleshopapp_payment_gateway
+      secrets:
+        - source: staging_token
+          target: payment_token
+      networks:
+        - payment
+      deploy:
+        update_config:
+          failure_action: rollback
+        placement:
+          constraints:
+            - 'node.role == worker'
+            - 'node.labels.pcidss == yes'
+
+Node labels are custom-defined labels added to swarm nodes with the docker node update command.
+In this example, the payment_gateway service performs operations that require it to run on a swarm node that has been
+hardened to PCI DSS standards. To enable this, you can apply a custom node label to any swarm node meeting these
+requirements. 
