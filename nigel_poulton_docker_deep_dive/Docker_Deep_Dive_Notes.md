@@ -2194,4 +2194,31 @@ strategy, and then imposes a couple of placement constraints.
 Node labels are custom-defined labels added to swarm nodes with the docker node update command.
 In this example, the payment_gateway service performs operations that require it to run on a swarm node that has been
 hardened to PCI DSS standards. To enable this, you can apply a custom node label to any swarm node meeting these
-requirements. 
+requirements.
+
+## Deploying apps with Docker Stacks - The Commands
+
+**docker stack deploy** is the command for deploying and updating stacks of services defined in a stack file. (usually
+called docker-stack.yml)
+
+**docker stack ls** lists all stacks on the Swarm, including how many services they have.
+
+**docker stack ps** gives detailed information about a deployed stack. It accepts the name of the stack as its main
+argument, lists which node each replica is running on, and shows desired state and current state.
+
+**docker stack rm** deletes a stack from the Swarm. It does not ask for confirmation before deleting the stack.
+
+## Chapter Summary
+
+Stacks are the native Docker solution for deploying and managing cloud-native microservices applications with multiple
+services. They are baked into the Docker engine, and offer a simple declarative interface for deploying and managing the
+entire lifecycle of an application.l
+
+You start with application code and a set of infrastructure requirements - things like networks, ports, volumes and
+secrets.You containerize the application and group together all of the app services and infrastructure requirements into
+a single declarative stack file. You set the number of replicas, as well as rolling update and restart policies. Y YOu
+then take the file and deploy the application from it using the docker stack deploy command.
+
+Future updates to the deployed app should be done declaratively by checking the stack file out of source control,
+updating it, re-deploying the app, and checking the stack file back into source control.
+
