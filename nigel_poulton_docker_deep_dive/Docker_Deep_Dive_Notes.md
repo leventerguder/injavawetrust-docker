@@ -2222,3 +2222,83 @@ then take the file and deploy the application from it using the docker stack dep
 Future updates to the deployed app should be done declaratively by checking the stack file out of source control,
 updating it, re-deploying the app, and checking the stack file back into source control.
 
+# Chapter 15 Security in Docker
+
+## Security in Docker - The TLDR
+
+Security is all about layers. Generally speaking, the more layers of security the more secure something is. Well...
+Docker offers a lot of security layers.
+
+![](docker-security.png)
+
+Docker on Linux leverages most of the common Linux security and workload isolation technologies. These include
+namespaces, control groups(cgroups), capabilities, mandatory access control (MAC) systems, and seccomp.
+
+Docker Swarm Mode is secure by default. You get all of the following with zero configuration required; cryptographic
+node IDs, mutual authentication, automatic CA configuration, automatic certificate rotation, encrypted cluster store,
+encrypted networks, and more.
+
+Image security scanning analyses images, detects known vulnerabilities, and provides detailed reports.
+
+Docker secrets are a way to securely share sensitive data and are first-class objects in Docker. They’re stored in the
+encrypted cluster store, encrypted in-flight when delivered to containers, stored in in-memory filesystems when in use,
+and operate a least-privilege model.
+
+## Security in Docker - The deep dive
+
+When Docker decided to bake security into the platform, it decided to make it simple and easy.
+As a result, most of the security technologies offered by the Docker platform are simple to use. They also ship with
+sensible defaults — meaning you get a fairly secure platform at zero effort.
+
+### Linux Security Technologies
+
+**Namespaces**
+
+Kernel namespaces are at the very heart of containers. They slice up an operating system (OS) so that it looks and feels
+like multiple isolated operating systems. This lets us do really cool things like run multiple web servers on the same
+OS without having port conflicts.
+
+A high-level example of two web server applications running on a single host and both using port 443. Each web server
+app is running inside of its own network namespace.
+
+![](namespaces.png)
+
+Working directly with namespaces is hard. Fortunately, Docker hides this complexity and manages all of the namespaces
+required to build a useful container.
+
+Docker on Linux currently utilizes the following kernel namespaces:
+
+- Process ID (pid)
+- Network (net)
+- Filesystem/mount (mnt)
+- Inter-process Communication (ipc)
+- User(user)
+- UTS(uts)
+
+Docker containers are an organized collection of namespaces. This means that you get all of this OS isolation for free
+with every container.
+
+Every container has its own pid, net, mnt,ipc, uts, and potentially user namespace.
+
+**Process ID namespace:** Docker uses the pid namespace to provide isolated process trees for each container. This means
+every container gets its own PID 1. PID namespaces also mean that one container cannot see or access to the process tree
+of other containers. Nor can it see or access the process tree of the host it’s running on.
+
+**Network namespace:** Docker uses the net namespace to provide each container its own isolated network stack. This
+stack
+includes; interfaces, IP addresses, port ranges, and routing tables. For example, every container gets its own eth0
+interface with its own unique IP and range of ports.
+
+**Mount namespace:** Every container gets its own unique isolated root (/) filesystem. This means every container can
+have
+its own /etc, /var, /dev and other important filesystem constructs. Processes inside of a container cannot access the
+mount namespace of the Linux host or other containers — they can only see and access their own isolated filesystem.
+
+**Inter-process Communication namespace:** Docker uses the ipc namespace for shared memory access within a container. It
+also isolates the container from shared memory outside of the container.
+
+**User namespace:** Docker lets you use user namespaces to map users inside of a container to different users on the
+Linux
+host. A common example is mapping a container’s root user to a non-root user on the Linux host.
+
+**UTS namespace:** Docker uses the uts namespace to provide each container with its own hostname.
