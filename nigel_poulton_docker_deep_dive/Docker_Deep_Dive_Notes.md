@@ -2302,3 +2302,132 @@ Linux
 host. A common example is mapping a container’s root user to a non-root user on the Linux host.
 
 **UTS namespace:** Docker uses the uts namespace to provide each container with its own hostname.
+
+**Control Groups**
+
+If namespaces are about isolation, control groups (cgroups) are about setting limits.
+
+**Capabilities**
+It’s a bad idea to run containers as root — root is all-powerful and therefore very dangerous. But, it can be
+challenging running containers as unprivileged non-root users. For example, on most Linux systems, non-root users tend
+to be so powerless they’re practically useless. What’s needed, is a technology that lets us pick and choose which root
+powers a container needs in order to run.
+
+Under the hood, the Linux root user is a combination of a long list of capabilities. Some of these capabilities include:
+
+- CAP_CHOWN: lets you change file ownership
+- CAP_NET_BIND_SERVICE: lets you bind a socket to low numbered network ports
+- CAP_SETUID: lets you elevate the privilege level of a process
+- CAP_SYS_BOOT: lets you reboot the system.
+- ...
+
+This is an excellent example of implementing least privilege — you get a container running with only the capabilities
+required.
+
+**Mandatory Access Control Systems**
+
+Docker works with major Linux MAC technologies such as AppArmor and SELinux.
+Depending on your Linux distribution, Docker applies a default AppArmor profile to all new containers. According to the
+Docker documentation, this default profile is “moderately protective while providing wide application compatibility”.
+
+**seccomp**
+
+Docker uses seccomp, in filter mode, to limit the syscalls a container can make to the host’s kernel.
+As per the Docker security philosophy, all new containers get a default seccomp profile configured with sensible
+defaults. This is intended to provide moderate security without impacting application compatibility.
+
+**Final thoughts on the Linux security technologies**
+
+Docker supports most of the important Linux security technologies and ships with sensible defaults that add security but
+aren’t too restrictive.
+
+![](linux-security.png)
+
+### Docker platform security technologies
+
+**Security in Swarm Mode**
+
+Docker Swarm allows you to cluster multiple Docker hosts and deploy applications declaratively. Every Swarm is comprised
+of managers and workers that can be Linux or Windows. Managers host the control plane of the cluster and are responsible
+for configuring the cluster and dispatching work tasks. Workers are the nodes that run your application code as
+containers.
+
+Swarm mode includes many security features that are enabled out-of-the-box with sensible defaults.
+
+- Cryptographic node IDs
+- TLS for mutual authentication
+- Secure join tokens
+- CA configuration with automatic certificate rotation
+- Encrypted cluster store (config DB)
+- Encrypted networks
+
+**Swarm join tokens**
+
+The only thing that is needed to join new managers and workers to an existing swarm is the relevant join token. For this
+reason, it’s vital that you keep your join-tokens safe. Do not post them on public GitHub repos or even internal source
+code repos that are not restricted.
+
+Every swarm maintains two distinct join tokens:
+
+- One for joining new managers
+- One for joining new workers.
+
+It’s worth understanding the format of the Swarm join token. Every join token is comprised of 4 distinct fields
+separated by dashes (-):
+
+PREFIX - VERSION - SWARM ID - TOKEN
+
+The prefix is always SWMTKN. This allows you to pattern-match against it and prevent people from accidentally posting it
+publicly. The VERSION field indicates the version of the swarm. The Swarm ID field is a hash of the swarm’s certificate.
+The TOKEN field is the part that determines whether it can join nodes as managers or workers.
+
+**The cluster store**
+
+The cluster store is the brains of a swarm and is where cluster config and state are stored. It’s also critical to other
+Docker technologies such as overlay networking and Secrets. This is why swarm mode is required for so many advanced and
+security related Docker features. The moral of the story... if you’re not running in swarm mode, there’ll be a bunch of
+Docker technologies and security features you won’t be able to use.
+
+The store is currently based on the popular etcd distributed database and is automatically configured to replicate
+itself to all managers in the swarm. It is also encrypted by default.
+
+**Detecting vulnerabilities with image security scanning**
+
+Image scanning is your primary weapon against vulnerabilities and security holes in your images.
+
+Image scanners work by inspecting images and searching for packages that have known vulnerabilities. Once you know about
+these, you can update the packages and dependencies to versions with fixes.
+
+**Signing and verifying images with Docker Content Trust**
+
+Docker Content Trust (DCT) makes it simple and easy to verify the integrity and the publisher of images that you
+download and run. This is especially important when pulling images over untrusted networks such as the internet.
+
+You can force a Docker host to always sign and verify image push and pull operations by exporting the DOCKER_-
+CONTENT_TRUST environment variable with a value of 1. In the real world, you’ll want to make this a more permanent
+feature of Docker hosts.
+
+    export DOCKER_CONTENT_TRUST=1
+
+Once DCT is enabled, you’ll no longer be able to pull and work with unsigned images.
+
+## Docker Secrets
+
+Behind the scenes, secrets are encrypted at rest, encrypted in-flight, mounted in containers to in-memory filesystems,
+and operate under a least-privilege model where they are only made available to services that have been explicitly
+granted access to them. It’s quite a comprehensive end-to-end solution, and it even has its own docker secret
+sub-command.
+
+You can create and manage secrets with the docker secret sub-command, and you can attach them to services by specifying
+the --secret flag to the docker service create command.
+
+## Chapter Summary
+
+Docker can be configured to be extremely secure. It supports all of the major Linux security technologies, including;
+kernel namespaces, cgroups, capabilities, MAC, and seccomp. It ships with sensible defaults for all of these, but you
+can customize them and even disable them.
+
+Over and above the general Linux security technologies, Docker includes an extensive set of its own security
+technologies. Swarm Mode is built on TLS and is extremely simple to configure and customize. Image scanning can perform
+binary-level scans of images and provide detailed reports of known vulnerabilities. Docker Content Trust lets you sign
+and verify content, and Docker Secrets allow you to securely share sensitive data with containers and Swarm services.
