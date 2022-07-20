@@ -103,4 +103,25 @@ A replica is simply an instance of a Pod/Container. 3 Replicas means that the sa
     kubectl set image deployment/first-app kub-first-app=leventerguder/kub-first-app:2
     kubectl rollout status deployment/first-app
 
+    kubectl delete service first-app
+    kubectl delete deployment first-app
 
+## Resource Definition
+
+## Imperative vs Declarative Kubernetes usage
+
+Imperative
+
+- kubectl create deployment ...
+- Individual commands are executed to trigger certain Kubernetes actions
+- Comparable to using docker run only
+
+Declarative
+
+- kubectl apply -f config.yaml
+- A config file is defined and applied to change the desired state.
+- Comparable to using Docker Compose with Compose files.
+
+    
+    kubectl apply -f=deployment.yaml
+    kubectl delete   -f=deployment.yaml -f=service.yaml
