@@ -5,11 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8861b2fd-68e9-4647-8987-4e3cc8dbb9f8" name="Changes" comment="Docker_Deep_Dive_Notes chapter02 &amp; chapter03">
-      <change afterPath="$PROJECT_DIR$/.idea/git_toolbox_prj.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/index.pb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nigel_poulton_docker_deep_dive/Docker_Deep_Dive_Notes.md" beforeDir="false" afterPath="$PROJECT_DIR$/nigel_poulton_docker_deep_dive/Docker_Deep_Dive_Notes.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/index.pb" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/index.pb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Docker &amp; Kubernetes The Practical Guide - Udemy/Section 13 - Managing Data &amp; Volumes with Kubernetes.md" beforeDir="false" afterPath="$PROJECT_DIR$/Docker &amp; Kubernetes The Practical Guide - Udemy/Section 13 - Managing Data &amp; Volumes with Kubernetes.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,6 +19,9 @@
   </component>
   <component name="GitToolBoxStore">
     <option name="projectConfigVersion" value="5" />
+  </component>
+  <component name="KubernetesApiPersistence">
+    <option name="context" value="minikube" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -48,7 +49,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/levent/Workspace/git/injavawetrust-docker/nigel_poulton_docker_deep_dive&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/levent/Workspace/git/injavawetrust-docker/Docker &amp; Kubernetes The Practical Guide - Udemy&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -59,6 +60,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/Docker &amp; Kubernetes The Practical Guide - Udemy" />
       <recent name="$PROJECT_DIR$/nigel_poulton_docker_deep_dive" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -101,6 +103,25 @@
       <workItem from="1655009958753" duration="2412000" />
       <workItem from="1655090610962" duration="3378000" />
       <workItem from="1655176929559" duration="2354000" />
+      <workItem from="1656385591887" duration="41000" />
+      <workItem from="1656392490486" duration="3935000" />
+      <workItem from="1656518516821" duration="1271000" />
+      <workItem from="1656557939678" duration="3931000" />
+      <workItem from="1656689294991" duration="1795000" />
+      <workItem from="1656737689108" duration="2599000" />
+      <workItem from="1656833046729" duration="1661000" />
+      <workItem from="1656906715492" duration="2824000" />
+      <workItem from="1656991817038" duration="1560000" />
+      <workItem from="1657084933411" duration="1079000" />
+      <workItem from="1657126570491" duration="6389000" />
+      <workItem from="1657296299658" duration="3081000" />
+      <workItem from="1658041193823" duration="7345000" />
+      <workItem from="1658208867337" duration="675000" />
+      <workItem from="1658209553831" duration="804000" />
+      <workItem from="1658336331924" duration="2610000" />
+      <workItem from="1658383409161" duration="2246000" />
+      <workItem from="1658470732412" duration="1699000" />
+      <workItem from="1658729479158" duration="1816000" />
     </task>
     <task id="LOCAL-00001" summary="Docker_Deep_Dive_Notes chapter01">
       <created>1653412361313</created>
@@ -235,7 +256,91 @@
       <option name="project" value="LOCAL" />
       <updated>1655093678918</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Section 3">
+      <created>1656396028148</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1656396028148</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Docker &amp; Kubernetes The Practical Guide - Udemy&#10;Section 3">
+      <created>1656567002122</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1656567002122</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Docker &amp; Kubernetes The Practical Guide - Udemy&#10;Section 4">
+      <created>1656741592395</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1656741592395</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Docker &amp; Kubernetes The Practical Guide - Udemy&#10;Section 4">
+      <created>1656741618462</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1656741618462</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Docker &amp; Kubernetes The Practical Guide - Udemy&#10;Section 5">
+      <created>1656839368183</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1656839368183</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Docker &amp; Kubernetes The Practical Guide - Udemy&#10;Section 6">
+      <created>1656910143538</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1656910143538</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Docker &amp; Kubernetes The Practical Guide - Udemy&#10;Section 7">
+      <created>1656994700080</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1656994700080</updated>
+    </task>
+    <task id="LOCAL-00027" summary="Docker &amp; Kubernetes The Practical Guide - Udemy&#10;Section 11">
+      <created>1657135950679</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1657135950679</updated>
+    </task>
+    <task id="LOCAL-00028" summary="Docker_Deep_Dive_Notes Chapter11">
+      <created>1657300112915</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1657300112915</updated>
+    </task>
+    <task id="LOCAL-00029" summary="Docker &amp; Kubernetes The Practical Guide - Udemy&#10;Section 12">
+      <created>1658051108185</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1658051108185</updated>
+    </task>
+    <task id="LOCAL-00030" summary="Docker_Deep_Dive_Notes chapter02 &amp; chapter03">
+      <created>1658344920333</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1658344920333</updated>
+    </task>
+    <task id="LOCAL-00031" summary="Docker &amp; Kubernetes The Practical Guide - Udemy&#10;Section 13">
+      <created>1658386534496</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1658386534496</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -255,7 +360,6 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Docker_Deep_Dive_Notes chapter01" />
-    <MESSAGE value="Docker_Deep_Dive_Notes chapter02 &amp; chapter03" />
     <MESSAGE value="Docker_Deep_Dive_Notes Chapter05" />
     <MESSAGE value="Docker_Deep_Dive_Notes Chapter 6 - Images" />
     <MESSAGE value="Docker_Deep_Dive_Notes Chapter06" />
@@ -266,8 +370,18 @@
     <MESSAGE value="Docker_Deep_Dive_Notes Chapter08" />
     <MESSAGE value="Docker_Deep_Dive_Notes Chapter09" />
     <MESSAGE value="Docker_Deep_Dive_Notes Chapter10" />
+    <MESSAGE value="Section 3" />
+    <MESSAGE value="Docker &amp; Kubernetes The Practical Guide - Udemy&#10;Section 3" />
+    <MESSAGE value="Docker &amp; Kubernetes The Practical Guide - Udemy&#10;Section 4" />
+    <MESSAGE value="Docker &amp; Kubernetes The Practical Guide - Udemy&#10;Section 5" />
+    <MESSAGE value="Docker &amp; Kubernetes The Practical Guide - Udemy&#10;Section 6" />
+    <MESSAGE value="Docker &amp; Kubernetes The Practical Guide - Udemy&#10;Section 7" />
+    <MESSAGE value="Docker &amp; Kubernetes The Practical Guide - Udemy&#10;Section 11" />
     <MESSAGE value="Docker_Deep_Dive_Notes Chapter11" />
-    <option name="LAST_COMMIT_MESSAGE" value="Docker_Deep_Dive_Notes Chapter11" />
+    <MESSAGE value="Docker &amp; Kubernetes The Practical Guide - Udemy&#10;Section 12" />
+    <MESSAGE value="Docker_Deep_Dive_Notes chapter02 &amp; chapter03" />
+    <MESSAGE value="Docker &amp; Kubernetes The Practical Guide - Udemy&#10;Section 13" />
+    <option name="LAST_COMMIT_MESSAGE" value="Docker &amp; Kubernetes The Practical Guide - Udemy&#10;Section 13" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
